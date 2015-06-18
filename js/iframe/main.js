@@ -8,7 +8,7 @@ $(document).ready(function(){
       payload = {};
     }
     if (payload.reply){
-      $('body img').before('<p>The parent replied:'+payload.reply+'</p>');
+      $('body img').before('<p>The parent replied: '+payload.reply+'</p>');
     }
   }, false);
   var params = URI(document.URL).query(true);

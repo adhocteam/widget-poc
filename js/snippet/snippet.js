@@ -3,7 +3,7 @@
     var styles = document.createElement('link');
     styles.rel = 'stylesheet';
     styles.type = 'text/css';
-    styles.href = 'css/modal.css'
+    styles.href = 'css/modal.css';
     var jq = document.createElement('script');
     jq.src = 'build/async.js'
     jq.type = 'text/javascript';
