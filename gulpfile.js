@@ -7,7 +7,7 @@ var gulp = require('gulp'),
 gulp.task('default', ['iframe', 'snippet', 'async', 'sass']);
 
 gulp.task('async', function() {
-  return gulp.src(['./node_modules/vanilla-modal/dist/vanilla-modal.min.js', './js/async/*.js'])
+  return gulp.src(['./node_modules/vanilla-modal/dist/vanilla-modal.js', './js/async/*.js'])
     .pipe(print())
     .pipe(uglify())
     .pipe(concat('async.js'))
@@ -23,7 +23,7 @@ gulp.task('snippet', function() {
 });
 
 gulp.task('iframe', function(){
-  return gulp.src(['./js/jquery*.js', './node_modules/URIjs/src/URI.min.js', './js/iframe/*.js'])
+  return gulp.src(['./node_modules/URIjs/src/URI.js', './js/iframe/*.js'])
     .pipe(print())
     .pipe(uglify())
     .pipe(concat('iframe.js'))
