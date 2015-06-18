@@ -5,7 +5,7 @@
     styles.type = 'text/css';
     styles.href = 'css/modal.css'
     var jq = document.createElement('script');
-    jq.src = 'build/app.js'
+    jq.src = 'build/async.js'
     jq.type = 'text/javascript';
     jq.async = 'true';
     // Shout out to IE9 for firing _both_ events

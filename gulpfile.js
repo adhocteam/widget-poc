@@ -4,11 +4,21 @@ var gulp = require('gulp'),
     print = require('gulp-print'),
     sass = require('gulp-sass');
 
-gulp.task('default', function() {
-  return gulp.src(['./js/jquery*.js', './node_modules/vanilla-modal/dist/vanilla-modal.min.js', './js/*.js'])
+gulp.task('default', ['iframe', 'snippet', 'async', 'sass']);
+
+gulp.task('async', function() {
+  return gulp.src(['./node_modules/vanilla-modal/dist/vanilla-modal.min.js', './js/async/*.js'])
     .pipe(print())
     .pipe(uglify())
-    .pipe(concat('app.js'))
+    .pipe(concat('async.js'))
+    .pipe(gulp.dest('build'));
+});
+
+gulp.task('snippet', function() {
+  return gulp.src(['./js/snippet/*.js'])
+    .pipe(print())
+    .pipe(uglify())
+    .pipe(concat('snippet.js'))
     .pipe(gulp.dest('build'));
 });
 

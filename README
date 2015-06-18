@@ -1,3 +1,3 @@
 npm install
-gulp default iframe sass watch
+gulp default watch
 open index.html
