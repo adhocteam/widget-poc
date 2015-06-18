@@ -1,0 +1,38 @@
+.modal {
+  display: none; }
+
+body.vanilla-modal .modal {
+  display: block;
+  position: fixed;
+  content: "";
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: -1;
+  opacity: 0;
+  font-size: 0;
+  transition: opacity 0.2s, z-index 0s 0.2s;
+  text-align: center;
+  overflow: hidden;
+  overflow-y: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch; }
+  body.vanilla-modal .modal > * {
+    display: inline-block;
+    white-space: normal;
+    vertical-align: middle;
+    text-align: left; }
+  body.vanilla-modal .modal:before {
+    display: inline-block;
+    overflow: hidden;
+    width: 0;
+    height: 100%;
+    vertical-align: middle;
+    content: ""; }
+
+body.vanilla-modal.modal-visible .modal {
+  z-index: 99;
+  opacity: 1;
+  transition: opacity 0.2s; }

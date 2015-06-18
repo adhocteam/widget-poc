@@ -1,4 +1,4 @@
 npm install
-gulp && gulp iframe
+gulp default iframe sass
 gulp watch
 open index.html

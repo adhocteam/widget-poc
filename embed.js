@@ -1,25 +1,21 @@
 (
   function(){
-    var boogieBoard = function(){
-      $('[data-modal]').click(function(){
-        $('<iframe src="embed.html?input='+$(this).data('modal')+'"></iframe>').appendTo('body').modal();
-      });
-      window.addEventListener("message", function(event){
-        var payload = JSON.parse(event.data);
-        event.source.postMessage(JSON.stringify({reply: "Hello back from the parent"}), '*');
-        $('body').append("<div><p>The iFrame said:</p>"+event.data+"</div>")
-      }, false);
-    };
+    var styles = document.createElement('link');
+    styles.rel = 'stylesheet';
+    styles.type = 'text/css';
+    styles.href = 'css/modal.css'
     var jq = document.createElement('script');
     jq.src = 'build/app.js'
     jq.type = 'text/javascript';
     jq.async = 'true';
+    // Shout out to IE9 for firing _both_ events
     jq.onload = jq.onreadystatechange = function(){
       var rs = this.readyState;
       if (rs && rs != 'complete' && rs != 'loaded') return;
-      try {boogieBoard()} catch(e) {}
+      try {bindBehavior()} catch(e) {}
     };
     var first = document.getElementsByTagName('script')[0];
+    first.parentNode.insertBefore(styles, first);
     first.parentNode.insertBefore(jq, first);
   }
 )();

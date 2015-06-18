@@ -1,7 +1,12 @@
 $(document).ready(function(){
   window.parent.postMessage(JSON.stringify({init: "Hello from the iFrame"}), '*');
   window.addEventListener("message", function(event){
-    var payload = JSON.parse(event.data);
+    var payload;
+    try {
+      payload = JSON.parse(event.data);
+    } catch(err) {
+      payload = {};
+    }
     if (payload.reply){
       $('body img').before('<p>The parent replied:'+payload.reply+'</p>');
     }
