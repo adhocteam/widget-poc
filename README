@@ -1,0 +1,4 @@
+npm install
+gulp && gulp iframe
+gulp watch
+open index.html
