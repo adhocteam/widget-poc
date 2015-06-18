@@ -40,8 +40,10 @@ window.EmbedPOC.bindBehavior = function(){
       payload = {};
     }
     event.source.postMessage(JSON.stringify({reply: "Hello back from the parent"}), '*');
-    var messageContainer = document.createElement('div');
-    messageContainer.innerHTML = "<p>The iFrame said:</p>"+payload.init+"</div>";
-    document.body.appendChild(messageContainer);
+    if (payload.init){
+      var messageContainer = document.createElement('div');
+      messageContainer.innerHTML = "<p>The iFrame said:</p>"+payload.init+"</div>";
+      document.body.appendChild(messageContainer);
+    }
   }, false);
 };
