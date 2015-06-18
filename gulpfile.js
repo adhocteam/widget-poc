@@ -7,7 +7,7 @@ var gulp = require('gulp'),
 gulp.task('default', function() {
   return gulp.src(['./js/jquery*.js', './node_modules/vanilla-modal/dist/vanilla-modal.min.js', './js/*.js'])
     .pipe(print())
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(concat('app.js'))
     .pipe(gulp.dest('build'));
 });
@@ -15,13 +15,13 @@ gulp.task('default', function() {
 gulp.task('iframe', function(){
   return gulp.src(['./js/jquery*.js', './node_modules/URIjs/src/URI.min.js', './js/iframe/*.js'])
     .pipe(print())
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(concat('iframe.js'))
     .pipe(gulp.dest('build'));
 });
 
 gulp.task('sass', function () {
-  gulp.src('./styles/**/*.scss')
+  return gulp.src('./styles/**/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest('./css'));
 });
