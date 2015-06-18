@@ -11,10 +11,10 @@ window.EmbedPOC.bindBehavior = function(){
   
   var modal = new VanillaModal({
     onBeforeClose: function(){
-      if (this['$'].modalContent.innerHTML){
+      if (this.$.modalContent.innerHTML){
         // If you just set it to null, IE gives it a null
         // child node, instead of an empty set of child nodes.
-        this['$'].modalContent.innerHTML = null;
+        this.$.modalContent.innerHTML = null;
       }
     },
     onOpen: function(){
