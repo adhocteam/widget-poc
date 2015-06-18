@@ -1,7 +1,7 @@
 window.EmbedPOC.bindBehavior = function(){
   var modalBox = document.createElement('div');
   modalBox.className = 'modal';
-  modalBox.innerHTML = '<div class="modal-inner"><a rel="modal:close">Close</a><div class="modal-content"></div></div>';
+  modalBox.innerHTML = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
   
   var modalContainer = document.createElement('div');
   modalContainer.id = 'iFrameWidget';
