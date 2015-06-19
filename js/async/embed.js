@@ -1,6 +1,8 @@
 window.EmbedPOC.bindBehavior = function(){
   var modalBox = document.createElement('div');
   modalBox.className = 'modal';
+  modalBox.setAttribute('role','dialog');
+  modalBox.setAttribute('aria-labelledby', 'iFrame');
   modalBox.innerHTML = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
   
   var modalContainer = document.createElement('div');
@@ -8,6 +10,8 @@ window.EmbedPOC.bindBehavior = function(){
   modalContainer.style.display = 'none';
   document.body.appendChild(modalBox);
   document.body.appendChild(modalContainer);
+
+  var lastFocus;
   
   var modal = new VanillaModal({
     onBeforeClose: function(){
@@ -17,9 +21,15 @@ window.EmbedPOC.bindBehavior = function(){
         this.$.modalContent.innerHTML = null;
       }
     },
+    onClose: function(){
+      console.log(lastFocus);
+      lastFocus.focus();
+    },
     onOpen: function(){
       this['$'].modalContent.innerHTML = modalContainer.getAttribute('data-content-to-load');
-    }
+      this['$'].modalContent.querySelector('iframe').contentWindow.focus();
+    },
+    closeKey: 27
   });
 
   var dispatchedMessage;
@@ -28,7 +38,8 @@ window.EmbedPOC.bindBehavior = function(){
     if (event.target.getAttribute('data-modal')) {
       var modalData = event.target.getAttribute('data-modal');
       var iFrameSrc = "embed.html?input="+modalData;
-      var iFrame = '<iframe src="'+iFrameSrc+'"></iframe>';
+      var iFrame = '<iframe aria-live="polite" src="'+iFrameSrc+'"></iframe>';
+      lastFocus = event.target || document.activeElement;
       modalContainer.setAttribute('data-content-to-load', iFrame);
       modal.open('#' +modalContainer.id);
       dispatchedMessage = modalData;

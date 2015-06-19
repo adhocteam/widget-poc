@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  
+  $('input[type="text"]').parent().focus();
   var dispatchToParent = function(payload){
     window.parent.postMessage(JSON.stringify(
       payload
