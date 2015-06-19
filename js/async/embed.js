@@ -22,8 +22,10 @@ window.EmbedPOC.bindBehavior = function(){
       }
     },
     onClose: function(){
-      console.log(lastFocus);
-      lastFocus.focus();
+      if (lastFocus){
+        lastFocus.focus();
+        lastFocus = null;
+      }
     },
     onOpen: function(){
       this['$'].modalContent.innerHTML = modalContainer.getAttribute('data-content-to-load');
