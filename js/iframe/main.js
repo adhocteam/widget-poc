@@ -1,16 +1,28 @@
 $(document).ready(function(){
-  window.parent.postMessage(JSON.stringify({init: "Hello from the iFrame"}), '*');
+  
+  var dispatchToParent = function(payload){
+    window.parent.postMessage(JSON.stringify(
+      payload
+    ), window.location.origin);
+  }
+  dispatchToParent({init: "Hello from the iFrame"});
+  $('form').submit(function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    dispatchToParent({message: $(this).find('input[type="text"]').val()});
+  });
   window.addEventListener("message", function(event){
-    var payload;
+    // Only accept same-origin messages for now
+    if (event.origin != window.location.origin) return;
     try {
-      payload = JSON.parse(event.data);
+      var payload = JSON.parse(event.data);
     } catch(err) {
-      payload = {};
+      return;
     }
     if (payload.reply){
-      $('body img').before('<p>The parent replied: '+payload.reply+'</p>');
+      $('body').append('<p>The parent replied: '+payload.reply+'</p>');
     }
   }, false);
   var params = URI(document.URL).query(true);
-  $('body img').before('<p>The parent said: '+params['input']+'</p>');
+  $('body').append('<p>The parent said: '+params['input']+'</p>');
 });

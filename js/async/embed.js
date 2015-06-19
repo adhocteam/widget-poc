@@ -34,19 +34,23 @@ window.EmbedPOC.bindBehavior = function(){
       dispatchedMessage = modalData;
     }
   });
-  
+  var messageContainer = document.createElement('div');
+  document.body.appendChild(messageContainer);
+
   window.addEventListener("message", function(event){
-    var payload;
+    if (event.origin != window.location.origin) return;
     try {
-      payload = JSON.parse(event.data);
+      var payload = JSON.parse(event.data);
     } catch(err) {
-      payload = {};
+      return;
     }
-    event.source.postMessage(JSON.stringify({reply: "Hello back from the parent. In case you forgot, the thing I sent you earlier was: " + dispatchedMessage}), '*');
+    
     if (payload.init){
-      var messageContainer = document.createElement('div');
-      messageContainer.innerHTML = "<p>The iFrame said:</p>"+payload.init+"</div>";
-      document.body.appendChild(messageContainer);
+      messageContainer.innerHTML = "<p>The iFrame initialized with:</p>"+payload.init;
+      event.source.postMessage(JSON.stringify({reply: "Hello back from the parent. In case you forgot, the value I sent you initially was: " + dispatchedMessage}), '*');
+    } else if (payload.message){
+      messageContainer.innerHTML = "<p>The iFrame sent:</p>"+payload.message;
+      event.source.postMessage(JSON.stringify({reply: "Thanks for sending " + payload.message}), window.location.origin);
     }
   }, false);
 };
