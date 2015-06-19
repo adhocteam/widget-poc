@@ -38,8 +38,8 @@ gulp.task('sass', function () {
 
 gulp.task('watch', function () {
   gulp.watch(['js/*', 'gulpfile.js'], ['default']);
-  gulp.watch(['js/iframe/*', 'gulpfile.js'], ['iframe']);
-  gulp.watch(['js/snippet/*', 'gulpfile.js'], ['snippet']);
-  gulp.watch(['js/async/*', 'gulpfile.js'], ['async']);
+  gulp.watch(['js/iframe/*', 'js/polyfills/*.js'], ['iframe']);
+  gulp.watch(['js/snippet/*'], ['snippet']);
+  gulp.watch(['js/async/*', 'js/polyfills/*.js'], ['async']);
   gulp.watch(['gulpfile.js', 'styles/**/*'],['sass']);
 });
