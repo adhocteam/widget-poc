@@ -33,6 +33,12 @@ window.EmbedPOC.bindBehavior = function(){
   });
 
   var dispatchedMessage;
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', 'build/iframe.js');
+  xhr.send('');
+  xhr = new XMLHttpRequest();
+  xhr.open('GET', 'css/iframe.css');
+  xhr.send('');
   
   document.querySelector('body').addEventListener('click', function(event) {
     if (event.target.getAttribute('data-modal')) {
