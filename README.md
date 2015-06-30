@@ -16,6 +16,8 @@
 
 ## Building
 
+```
 npm install
 gulp default watch
 open index.html
+```
