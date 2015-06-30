@@ -1,6 +1,6 @@
 # Implementing the Provider Search Widget
 
-1. Add a container for the widget to be injected into:
+1. Add a container for the coverage data for each plan on the page to be injected into:
 
    ```
    <div data-plan-id="<plan-id>" data-fips-code="<fips-code>" data-zip-code="<zip-code>"></div>
