@@ -1,30 +1,44 @@
 window.EmbedPOC.bindBehavior = function(){
-  var dispatchedMessage;
   var body = document.body;
+  var forEach = Array.prototype.forEach;
   
   var preloadResource = function(path){
     var xhr = new XMLHttpRequest();
     xhr.open('GET', path);
     xhr.send('');
   };
-
+  var iFrame;
+  var buildIframe = function(){
+    
+    iFrame = '<iframe aria-live="polite" src="embed.html"></iframe>';
+  }
+  
   var clickHandler = function(attribute, modal) {
     return function(event){
       var target = event.target,
           modalData = target.getAttribute(attribute);
       if (modalData) {
-        
-        var iFrameSrc = "embed.html?input="+modalData;
-        var iFrame = '<iframe aria-live="polite" src="'+iFrameSrc+'"></iframe>';
+        var planID = target.getAttribute('data-plan-id');
+        var section = target.getAttribute('data-section');
         modal.lastFocus = target;
         modal.fill(iFrame);
-        dispatchedMessage = modalData;
-        modal.open();
+        modal.open({planID: planID, section: section});
         
       }
     }
   };
 
+  var notifyPlans = function(sendFunc){
+    var blocks = body.querySelectorAll('[data-my-coverage]');
+    forEach.call(blocks, function(block){
+      sendFunc.call(null, {
+        planID: block.getAttribute('data-plan-id'),
+        fips: block.getAttribute('data-fips-code'),
+        zip: block.getAttribute('data-zip-code')
+      });
+    });
+  }
+  
   var messageHandler = function(output){
     return function(event){
       if (event.origin != window.location.origin) return;
@@ -33,17 +47,21 @@ window.EmbedPOC.bindBehavior = function(){
       } catch(err) {
         return;
       }
-
-      var replyWith = function(message){
-        event.source.postMessage(JSON.stringify({reply: message}), window.location.origin);
+      var replyWith = function(payload){
+        event.source.postMessage(JSON.stringify(payload), window.location.origin);
       }
       
       if (payload.init){
-        output.innerHTML = "<p>The iFrame initialized with:</p>"+payload.init;
-        replyWith("Hello back from the parent. In case you forgot, the value I sent you initially was: " + dispatchedMessage);
-      } else if (payload.message){
-        output.innerHTML = "<p>The iFrame sent:</p>"+payload.message;
-        replyWith("Thanks for sending " + payload.message);
+        notifyPlans(replyWith);
+      } else if (payload.planData){
+        for (var planID in payload.planData){
+          var block = body.querySelectorAll('[data-plan-id="'+planID+'"]');
+          if (block[0]){
+            block[0].innerHTML = payload.planData[planID];
+          }
+        }
+      } else if (payload.overlayContent){
+        addOverlay(payload.overlayContent);
       }
     };
   };
@@ -57,6 +75,7 @@ window.EmbedPOC.bindBehavior = function(){
     modalBox.innerHTML = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
 
     var modalContainer = document.createElement('div');
+    var attributes = {};
     modalContainer.id = 'iFrameWidget';
     modalContainer.style.display = 'none';
     body.appendChild(modalBox);
@@ -85,6 +104,9 @@ window.EmbedPOC.bindBehavior = function(){
     });
     
     var modal = {
+      setAttribute: function(attrName, value){
+        attributes[attrName] = value;
+      },
       open: function(){
         vm.open('#'+ modalContainer.id);
       },
@@ -95,14 +117,32 @@ window.EmbedPOC.bindBehavior = function(){
     return modal;
   };
 
+  
+  
+  var addOverlay = function(content){
+    var overlay = document.getElementsByClassName('widgetOverlay')[0];
+    if (!overlay){
+      var box = document.createElement('div');
+      box.className = 'widgetOverlay';
+      body.appendChild(box);
+      overlay = box;
+    }
+    overlay.innerHTML = content;
+  }
+  
+  buildIframe();
   var modal = buildModal();
   body.addEventListener('click', clickHandler('data-modal', modal));
 
+  
+  
+  var iFramebox = document.createElement('div');
+  iFramebox.style.display = 'none';
+  iFramebox.innerHTML = iFrame;
+  body.appendChild(iFramebox);
   var messageContainer = document.createElement('div');
   body.appendChild(messageContainer);
   window.addEventListener("message", messageHandler(messageContainer), false);
   
-  preloadResource('build/iframe.js');
-  preloadResource('css/iframe.css');
   
 };
