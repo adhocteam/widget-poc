@@ -39,12 +39,7 @@ $(document).ready(function(){
 
   window.addEventListener("message", function(event){
     // Only accept same-origin messages for now
-    if (event.origin != window.location.origin) return;
-    try {
-      var payload = JSON.parse(event.data);
-    } catch(err) {
-      return;
-    }
+    var payload = extractPayload(event);
     if (payload.planID){
       emitFactsAboutId(payload.planID)
     } else if (payload.routeTo){

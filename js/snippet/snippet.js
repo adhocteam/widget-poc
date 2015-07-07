@@ -10,13 +10,12 @@
     jq.async = 'true';
     // Shout out to IE9 for firing _both_ events
     var callbackFired = false;
-    window.EmbedPOC = {};
     jq.onload = jq.onreadystatechange = function(){
       var rs = this.readyState;
       if (callbackFired || rs && rs != 'complete' && rs != 'loaded') return;
       try {
         callbackFired = true;
-        EmbedPOC.bindBehavior();
+        PlanCompareWidget.init();
       } catch(e) {}
     };
     var first = document.getElementsByTagName('script')[0];

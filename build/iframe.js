@@ -4,6 +4,18 @@ if (!wl.origin) {
   wl.origin = wl.protocol + "//" + wl.hostname + (wl.port ? ':' + wl.port: '');
 }
 
+var extractPayload= function(event){
+    // Only accept same-origin messages for now
+  if (event.origin != window.location.origin) return {};
+  try {
+    var payload = JSON.parse(event.data);
+    return payload;
+  } catch(err) {
+    return {};
+  }
+    
+}
+
 /* Riot v2.2.2-beta, @license MIT, (c) 2015 Muut Inc. + contributors */
 
 ;(function(window) {
@@ -1338,7 +1350,7 @@ riot.mountTo = riot.mount
 /*!
  * URI.js - Mutating URLs
  *
- * Version: 1.15.1
+ * Version: 1.15.2
  *
  * Author: Rodney Rehm
  * Web: http://medialize.github.io/URI.js/
@@ -1409,7 +1421,7 @@ riot.mountTo = riot.mount
     return this;
   }
 
-  URI.version = '1.15.1';
+  URI.version = '1.15.2';
 
   var p = URI.prototype;
   var hasOwn = Object.prototype.hasOwnProperty;
@@ -1943,7 +1955,7 @@ riot.mountTo = riot.mount
       value = v.length ? URI.decodeQuery(v.join('='), escapeQuerySpace) : null;
 
       if (hasOwn.call(items, name)) {
-        if (typeof items[name] === 'string') {
+        if (typeof items[name] === 'string' || items[name] === null) {
           items[name] = [items[name]];
         }
 
@@ -2961,7 +2973,7 @@ riot.mountTo = riot.mount
       v = (typeof v === 'string' || v instanceof String) ? URI.encode(v) : v;
     } else {
       for (i = 0, l = v.length; i < l; i++) {
-        v[i] = URI.decode(v[i]);
+        v[i] = URI.encode(v[i]);
       }
     }
 
@@ -3116,6 +3128,11 @@ riot.mountTo = riot.mount
     if (_path.charAt(0) !== '/') {
       _was_relative = true;
       _path = '/' + _path;
+    }
+
+    // handle relative files (as opposed to directories)
+    if (_path.slice(-3) === '/..' || _path.slice(-2) === '/.') {
+      _path += '/';
     }
 
     // resolve simples
@@ -3353,7 +3370,7 @@ riot.mountTo = riot.mount
     }
 
     // determine common sub path
-    common = URI.commonPath(relative.path(), base.path());
+    common = URI.commonPath(relativePath, basePath);
 
     // If the paths have nothing in common, return a relative URL with the absolute path.
     if (!common) {
@@ -3365,7 +3382,7 @@ riot.mountTo = riot.mount
       .replace(/[^\/]*$/, '')
       .replace(/.*?\//g, '../');
 
-    relativeParts.path = parents + relativeParts.path.substring(common.length);
+    relativeParts.path = (parents + relativeParts.path.substring(common.length)) || './';
 
     return relative.build();
   };
@@ -3493,12 +3510,7 @@ $(document).ready(function(){
 
   window.addEventListener("message", function(event){
     // Only accept same-origin messages for now
-    if (event.origin != window.location.origin) return;
-    try {
-      var payload = JSON.parse(event.data);
-    } catch(err) {
-      return;
-    }
+    var payload = extractPayload(event);
     if (payload.planID){
       emitFactsAboutId(payload.planID)
     } else if (payload.routeTo){
@@ -3521,7 +3533,7 @@ $(document).ready(function(){
   emitInit();
 });
 
-riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.scrips}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true>View All / Edit</a></div>', function(opts) {
+riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.scrips}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true class="overlay all">View All / Edit</a></div>', function(opts) {
 
 });
 

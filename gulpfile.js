@@ -3,12 +3,13 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     print = require('gulp-print'),
     sass = require('gulp-sass'),
-    riot = require('gulp-riot');
+    riot = require('gulp-riot'),
+    mocha = require('gulp-spawn-mocha');
 
 gulp.task('default', ['iframe', 'snippet', 'async', 'sass-iframe', 'sass-widget']);
 
 gulp.task('async', function() {
-  return gulp.src(['./js/polyfills/*.js', './js/async/*.js'])
+  return gulp.src(['./js/polyfills/*.js', './js/common/*.js', './js/async/*.js'])
     .pipe(print())
     //.pipe(uglify())
     .pipe(concat('async.js'))
@@ -24,7 +25,7 @@ gulp.task('snippet', function() {
 });
 
 gulp.task('iframe', ['riot'], function(){
-  return gulp.src(['./js/polyfills/*.js', './node_modules/riot/riot.js', './node_modules/URIjs/src/URI.js', './js/iframe/*.js', './js/riot/*.js'])
+  return gulp.src(['./js/polyfills/*.js', './js/common/*.js', './node_modules/riot/riot.js', './node_modules/URIjs/src/URI.js', './js/iframe/*.js', './js/riot/*.js'])
     .pipe(print())
     //.pipe(uglify())
     .pipe(concat('iframe.js'))
@@ -49,6 +50,12 @@ gulp.task('sass-widget', function () {
     .pipe(sass().on('error', sass.logError))
     .pipe(concat('widget.css'))
     .pipe(gulp.dest('./css'));
+});
+
+gulp.task('mocha-run',['default'], function() {
+  return gulp.src('./test/**/*.js')
+    .pipe(print())
+    .pipe(mocha({R: 'nyan'}));
 });
 
 gulp.task('watch', function () {
