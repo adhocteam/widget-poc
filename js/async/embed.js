@@ -2,26 +2,15 @@ window.EmbedPOC.bindBehavior = function(){
   var body = document.body;
   var forEach = Array.prototype.forEach;
   
-  var preloadResource = function(path){
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', path);
-    xhr.send('');
-  };
-  var iFrame;
-  var buildIframe = function(){
-    
-    iFrame = '<iframe aria-live="polite" src="embed.html"></iframe>';
-  }
+  var iFrame = '<iframe aria-live="polite" src="embed.html"></iframe>';
   
   var clickHandler = function(attribute, modal) {
     return function(event){
-      var target = event.target,
-          modalData = target.getAttribute(attribute);
-      if (modalData) {
+      var target = event.target;
+      if (target.getAttribute(attribute)) {
         var planID = target.getAttribute('data-plan-id');
         var section = target.getAttribute('data-section');
         modal.lastFocus = target;
-        modal.fill(iFrame);
         modal.open({planID: planID, section: section});
         
       }
@@ -38,8 +27,17 @@ window.EmbedPOC.bindBehavior = function(){
       });
     });
   }
+
+  var updatePlans = function(data){
+    for (var planID in data){
+      var block = body.querySelector('[data-plan-id="'+planID+'"]');
+      if (block){
+        block.innerHTML = data[planID];
+      }
+    }
+  }
   
-  var messageHandler = function(output){
+  var messageHandler = function(modal){
     return function(event){
       if (event.origin != window.location.origin) return;
       try {
@@ -53,72 +51,88 @@ window.EmbedPOC.bindBehavior = function(){
       
       if (payload.init){
         notifyPlans(replyWith);
+        notifyModal(modal, replyWith);
       } else if (payload.planData){
-        for (var planID in payload.planData){
-          var block = body.querySelectorAll('[data-plan-id="'+planID+'"]');
-          if (block[0]){
-            block[0].innerHTML = payload.planData[planID];
-          }
-        }
+        updatePlans(payload.planData);
       } else if (payload.overlayContent){
         addOverlay(payload.overlayContent);
       }
     };
   };
 
+  var notifyModal = function(modal, replyFunc){
+    modal.dispatchFunc = replyFunc
+  }
+  
   var buildModal = function(){
-    var modalBox = document.createElement('div');
 
-    modalBox.className = 'modal';
-    modalBox.setAttribute('role','dialog');
-    modalBox.setAttribute('aria-labelledby', 'iFrame');
-    modalBox.innerHTML = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
-
-    var modalContainer = document.createElement('div');
-    var attributes = {};
-    modalContainer.id = 'iFrameWidget';
-    modalContainer.style.display = 'none';
-    body.appendChild(modalBox);
-    body.appendChild(modalContainer);
-
-    var vm = new VanillaModal({
-      onBeforeClose: function(){
-        if (this.$.modalContent.innerHTML){
-          // If you just set it to null, IE gives it a null
-          // child node, instead of an empty set of child nodes.
-          this.$.modalContent.innerHTML = null;
-        }
-      },
-      onClose: function(){
-        if (modal.lastFocus){
-          modal.lastFocus.focus();
-          modal.lastFocus = null;
-        }
-      },
-      onOpen: function(){
-        var content=this.$.modalContent;
-        content.innerHTML = content.getAttribute('data-content-to-load');
-        content.querySelector('iframe').contentWindow.focus();
-      },
-      closeKey: 27
-    });
-    
     var modal = {
       setAttribute: function(attrName, value){
-        attributes[attrName] = value;
+        this.attributes[attrName] = value;
       },
-      open: function(){
-        vm.open('#'+ modalContainer.id);
+      close: function(){
+        this.container.className = 'modal-container';
+        if (this.lastFocus){
+          this.lastFocus.focus();
+          this.lastFocus = null;
+        }
       },
-      fill: function(content){
-        vm.$.modalContent.setAttribute('data-content-to-load', content);
+      open: function(params){
+        this.container.querySelector('iframe').contentWindow.focus();
+        this.container.className = 'modal-container modal-visible';
+        this.send({routeTo: params});
+      },
+      send: function(payload){
+        if (this.dispatchFunc){
+          this.dispatchFunc.call(null, payload);
+        }
       }
     };
+    
+    modal.attributes = {};
+    modal.container = document.createElement('div');
+    modal.container.className = 'modal-container';
+    
+    var buildModalBox = function(){
+      var modalBox = document.createElement('div');
+      modalBox.className = 'modal';
+      modalBox.setAttribute('role','dialog');
+      modalBox.setAttribute('aria-labelledby', 'iFrame');
+      modalBox.innerHTML = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
+      modalBox.querySelector('.modal-content').innerHTML = iFrame;
+      return modalBox;
+    };
+
+    modal.container.appendChild(buildModalBox());
+    
+    var bindBehaviors = function(modal){
+      var modalBox = modal.container.querySelector('.modal');
+      var inner = modalBox.querySelector('.modal-inner');
+      inner.tabIndex = '0';
+      
+      inner.addEventListener('keyup', function(event){
+        if (event.keyCode == 27){
+          modal.close();
+        }
+      }, false);
+      
+      modalBox.addEventListener("click", function(){
+        modal.close();
+      }, false);
+      
+      inner.addEventListener("click", function(event){
+        if (event.target.getAttribute('rel') == 'modal:close') return;
+        event.stopPropagation();
+        event.preventDefault();
+      }, false);
+    };
+    
+    bindBehaviors(modal);
     return modal;
   };
 
-  
-  
+  // Only build this sucker once we have content for it.
+  // After that, reuse the node.
   var addOverlay = function(content){
     var overlay = document.getElementsByClassName('widgetOverlay')[0];
     if (!overlay){
@@ -130,19 +144,10 @@ window.EmbedPOC.bindBehavior = function(){
     overlay.innerHTML = content;
   }
   
-  buildIframe();
   var modal = buildModal();
+  body.appendChild(modal.container);
   body.addEventListener('click', clickHandler('data-modal', modal));
 
-  
-  
-  var iFramebox = document.createElement('div');
-  iFramebox.style.display = 'none';
-  iFramebox.innerHTML = iFrame;
-  body.appendChild(iFramebox);
-  var messageContainer = document.createElement('div');
-  body.appendChild(messageContainer);
-  window.addEventListener("message", messageHandler(messageContainer), false);
-  
+  window.addEventListener("message", messageHandler(modal), false);
   
 };

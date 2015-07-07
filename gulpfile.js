@@ -8,7 +8,7 @@ var gulp = require('gulp'),
 gulp.task('default', ['iframe', 'snippet', 'async', 'sass-iframe', 'sass-widget']);
 
 gulp.task('async', function() {
-  return gulp.src(['./js/polyfills/*.js', './node_modules/vanilla-modal/dist/vanilla-modal.js', './js/async/*.js'])
+  return gulp.src(['./js/polyfills/*.js', './js/async/*.js'])
     .pipe(print())
     //.pipe(uglify())
     .pipe(concat('async.js'))

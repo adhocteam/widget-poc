@@ -1,3 +1,3 @@
-riot.tag('plan-overlay', '<div class="overlayDetails"><ul><li>Doctors: {opts.doctors}</li><li>Prescriptions: {opts.scrips}</li><li>Facilities: {opts.facilities}</li></ul><a href="javascript:;" data-modal=true>View All / Edit</a></div>', function(opts) {
+riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.scrips}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true>View All / Edit</a></div>', function(opts) {
 
 });

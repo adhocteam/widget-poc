@@ -47,6 +47,10 @@ $(document).ready(function(){
     }
     if (payload.planID){
       emitFactsAboutId(payload.planID)
+    } else if (payload.routeTo){
+      var routeBox = document.createElement('div');
+      routeBox.innerHTML = JSON.stringify(payload.routeTo);
+      document.body.appendChild(routeBox);
     }
   }, false);
   
@@ -61,5 +65,4 @@ $(document).ready(function(){
   });
   emitOverlay();
   emitInit();
-  $('body').append('<p>The parent said: '+params['input']+'</p>');
 });
