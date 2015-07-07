@@ -32,6 +32,19 @@ describe('opening a modal', function(){
           .innerText
       }, function(text){
         expect(text).to.equal('Content goes here')
+      }).run(done);
+  });
+
+  it('should display coverage information', function(done){
+    new Nightmare()
+      .goto(url)
+      .wait('.planDetails')
+      .screenshot('screen.jpg')
+      .evaluate(function(){
+        return document.querySelectorAll('.planDetails')[1]
+          .getElementsByTagName('li')[0].innerText
+      }, function(text){
+        expect(text).to.equal('Doctors: 6 of 6')
       }).run(done)
   })
-})
+});
