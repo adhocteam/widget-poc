@@ -3471,7 +3471,44 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
 
 $(document).ready(function(){
   var forEach = Array.prototype.forEach;
+  var currentBody = null;
 
+  var routes = {
+    plans: {'id': 'plan-page', 'default': 'plans-page'},
+    doctors: 'doctors-page',
+    scrips: 'scrips-page',
+    facilities: 'facilities-page',
+    'default': 'home-page',
+    'home': 'home-page'
+  }
+  
+  var routeFunction = function(collection, id, action){
+    if(currentBody) currentBody.unmount(true);
+
+    var baseRoute = routes[collection] || routes['default'];
+    console.log(baseRoute);
+    if (id && baseRoute.id) {
+      currentBody = riot.mount('body', baseRoute.id, {id: id})[0];
+    } else {
+      currentBody = riot.mount('body', baseRoute)[0];
+    }
+  };
+  
+  riot.route.exec(routeFunction);
+  riot.route(routeFunction);
+
+  var handleRouteTo = function(data){
+    console.log(data)
+    if (data.planID){
+      riot.route('plans/'+data.planID);
+    } else if (data.section){
+      riot.route(''+data.section);
+    } else {
+      riot.route('home');
+    }
+
+  }
+  
   var checkCoverage = function(planId, data){
     var output = {};
     // Consider it covered if the planId and the entity id share any chars
@@ -3557,9 +3594,7 @@ $(document).ready(function(){
     if (payload.planID){
       emitFactsAboutId(payload.planID)
     } else if (payload.routeTo){
-      var routeBox = document.createElement('div');
-      routeBox.innerHTML = JSON.stringify(payload.routeTo);
-      document.body.appendChild(routeBox);
+      handleRouteTo(payload.routeTo);
     }
   }, false);
   
@@ -3576,6 +3611,18 @@ $(document).ready(function(){
   emitInit();
 });
 
+riot.tag('doctors-page', '<h3>Doctors</h3>', function(opts) {
+
+});
+
+riot.tag('facilities-page', '<h3>Facilities</h3>', function(opts) {
+
+});
+
+riot.tag('home-page', '<h1>Content Here</h1><p>Content goes here</p>', function(opts) {
+
+});
+
 riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.scrips}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true class="overlay all">View All / Edit</a></div>', function(opts) {
 
 });
@@ -3584,6 +3631,14 @@ riot.tag('overlay-line', '<li> {opts.label}: {opts.count} <a href="javascript:;"
 
 });
 
+riot.tag('plan-page', '<p> Plan ID: {opts.id} </p>', function(opts) {
+
+});
+
 riot.tag('plan-details', '<div class="planDetails"><ul><li>Doctors: {opts.doctors.covered} of {opts.doctors.total}</li><li>Prescriptions: {opts.scrips.covered} of {opts.scrips.total}</li><li>Facilities: {opts.facilities.covered} of {opts.facilities.total}</li></ul><a href="javascript:" data-plan-id="{opts.planID}" data-modal=true>View All</a></div>', function(opts) {
+
+});
+
+riot.tag('scrips-page', '<h3>Prescriptions</h3>', function(opts) {
 
 });

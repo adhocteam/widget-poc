@@ -1,6 +1,43 @@
 $(document).ready(function(){
   var forEach = Array.prototype.forEach;
+  var currentBody = null;
 
+  var routes = {
+    plans: {'id': 'plan-page', 'default': 'plans-page'},
+    doctors: 'doctors-page',
+    scrips: 'scrips-page',
+    facilities: 'facilities-page',
+    'default': 'home-page',
+    'home': 'home-page'
+  }
+  
+  var routeFunction = function(collection, id, action){
+    if(currentBody) currentBody.unmount(true);
+
+    var baseRoute = routes[collection] || routes['default'];
+    console.log(baseRoute);
+    if (id && baseRoute.id) {
+      currentBody = riot.mount('body', baseRoute.id, {id: id})[0];
+    } else {
+      currentBody = riot.mount('body', baseRoute)[0];
+    }
+  };
+  
+  riot.route.exec(routeFunction);
+  riot.route(routeFunction);
+
+  var handleRouteTo = function(data){
+    console.log(data)
+    if (data.planID){
+      riot.route('plans/'+data.planID);
+    } else if (data.section){
+      riot.route(''+data.section);
+    } else {
+      riot.route('home');
+    }
+
+  }
+  
   var checkCoverage = function(planId, data){
     var output = {};
     // Consider it covered if the planId and the entity id share any chars
@@ -86,9 +123,7 @@ $(document).ready(function(){
     if (payload.planID){
       emitFactsAboutId(payload.planID)
     } else if (payload.routeTo){
-      var routeBox = document.createElement('div');
-      routeBox.innerHTML = JSON.stringify(payload.routeTo);
-      document.body.appendChild(routeBox);
+      handleRouteTo(payload.routeTo);
     }
   }, false);
   

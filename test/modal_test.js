@@ -12,16 +12,17 @@ describe('opening a modal', function(){
       .getElementsByTagName(tagname)[0].innerText;
   };
   
-  it('should open the modal', function(done){
+  it('should open the modal to the homepage', function(done){
     nightmare
       .click('.overlay.all')
       .wait('.modal-visible')
       .evaluate(firstIframeTagText, function(text){
         expect(text).to.equal('Content goes here')
-      }, 'p').run(done);
+      }, 'p')
+      .run(done);
   });
 
-  it('should display coverage information', function(done){
+  it('should display coverage information and navigate to plan on click', function(done){
     nightmare
       .wait('.planDetails')
       .evaluate(function(){
@@ -33,12 +34,12 @@ describe('opening a modal', function(){
       .click('[data-plan-id="123456"] div.planDetails a')
       .wait('.modal-visible')
       .evaluate(firstIframeTagText, function(text){
-        expect(text).to.include('"planID":"123456"')
-      }, 'div')
+        expect(text).to.include('Plan ID: 123456')
+      }, 'p')
       .run(done);
   });
 
-  it('should display overlay rollup and provide navigation instructions on click', function(done){
+  it('should display overlay rollup and provide navigate to sections on click', function(done){
     nightmare
       .wait('.overlayDetails')
       .evaluate(function(){
@@ -50,8 +51,8 @@ describe('opening a modal', function(){
       .click('.overlayDetails li a')
       .wait('.modal-visible')
       .evaluate(firstIframeTagText, function(text){
-        expect(text).to.include('"section":"doctors"')
-      }, 'div')
+        expect(text).to.include('Doctors')
+      }, 'h3')
       .run(done)
   });
 });
