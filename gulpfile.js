@@ -58,10 +58,11 @@ gulp.task('mocha-run',['default'], function() {
     .pipe(mocha({R: 'nyan'}));
 });
 
-gulp.task('watch', function () {
+gulp.task('watch',['default', 'mocha-run'], function () {
   gulp.watch(['js/*', 'gulpfile.js'], ['default']);
   gulp.watch(['js/iframe/*', 'js/polyfills/*.js'], ['iframe']);
   gulp.watch(['js/snippet/*'], ['snippet']);
   gulp.watch(['js/async/*', 'js/polyfills/*.js'], ['async']);
   gulp.watch(['gulpfile.js', 'styles/**/*'],['sass-iframe', 'sass-widget']);
+  gulp.watch(['js/**/*'],['mocha-run'])
 });

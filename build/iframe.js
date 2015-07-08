@@ -3488,7 +3488,6 @@ $(document).ready(function(){
       });
         
     });
-    console.log(output);
     return output;
   }
   
@@ -3512,11 +3511,10 @@ $(document).ready(function(){
       });
       output[type] = {covered: coveredCount, uncovered: uncoveredCount, total: coveredCount+uncoveredCount};
     });
-    console.log(output);
     return output;
   }
   
-  var getMyData = function(){
+  var getMyEntities = function(){
     return dummyData;
   }
   
@@ -3528,7 +3526,7 @@ $(document).ready(function(){
   }
 
   var emitOverlay = function(){
-    var dataPayload = getMyData();
+    var dataPayload = getMyEntities();
     var data = {doctors: dataPayload.doctors.length,
                 scrips: dataPayload.scrips.length,
                 facilities: dataPayload.facilities.length};
@@ -3542,7 +3540,7 @@ $(document).ready(function(){
   }
   
   var emitFactsAboutId = function(id){
-    var data = rollUpCoverage(checkCoverage(id, getMyData()));
+    var data = rollUpCoverage(checkCoverage(id, getMyEntities()));
     if (data){
       data.planID = id;
       var dispatch = document.createElement('div');
