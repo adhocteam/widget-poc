@@ -1,41 +1,28 @@
-var Nightmare = require('nightmare');
-var expect = require('chai').expect;
-
-var http = require('http');
-
-var finalhandler = require('finalhandler');
-var serveStatic = require('serve-static');
-
-var serve = serveStatic("./");
-var server = http.createServer(function(req, res) {
-  var done = finalhandler(req, res);
-  serve(req, res, done);
-});
-
-server.listen(8357);
-
 var url = "http://localhost:8357"
-var iFrame = '.modal-content iframe';
 describe('opening a modal', function(){
   this.timeout(30000);
+  var nightmare;
+  beforeEach(function(){
+    nightmare = new Nightmare;
+    nightmare.goto(url);
+  });
 
+  var firstIframeTagText = function(tagname){
+    return document.querySelector('.modal-content iframe').contentDocument
+      .getElementsByTagName(tagname)[0].innerText;
+  };
+  
   it('should open the modal', function(done){
-    new Nightmare()
-      .goto(url)
+    nightmare
       .click('.overlay.all')
       .wait('.modal-visible')
-      .evaluate(function(iFrame){
-        return document.querySelector(iFrame).contentDocument
-          .getElementsByTagName('p')[0]
-          .innerText
-      }, function(text){
+      .evaluate(firstIframeTagText, function(text){
         expect(text).to.equal('Content goes here')
-      }, iFrame).run(done);
+      }, 'p').run(done);
   });
 
   it('should display coverage information', function(done){
-    new Nightmare()
-      .goto(url)
+    nightmare
       .wait('.planDetails')
       .evaluate(function(){
         return document.querySelectorAll('.planDetails')[1]
@@ -45,18 +32,14 @@ describe('opening a modal', function(){
       })
       .click('[data-plan-id="123456"] div.planDetails a')
       .wait('.modal-visible')
-      .evaluate(function(iFrame){
-        return document.querySelector(iFrame).contentDocument
-          .getElementsByTagName('div')[0].innerText
-      }, function(text){
+      .evaluate(firstIframeTagText, function(text){
         expect(text).to.include('"planID":"123456"')
-      }, iFrame)
+      }, 'div')
       .run(done);
   });
 
   it('should display overlay rollup and provide navigation instructions on click', function(done){
-    new Nightmare()
-      .goto(url)
+    nightmare
       .wait('.overlayDetails')
       .evaluate(function(){
         return document.querySelector('.overlayDetails')
@@ -66,12 +49,9 @@ describe('opening a modal', function(){
       })
       .click('.overlayDetails li a')
       .wait('.modal-visible')
-      .evaluate(function(iFrame){
-        return document.querySelector(iFrame).contentDocument
-          .getElementsByTagName('div')[0].innerText
-      }, function(text){
+      .evaluate(firstIframeTagText, function(text){
         expect(text).to.include('"section":"doctors"')
-      }, iFrame)
+      }, 'div')
       .run(done)
   });
 });

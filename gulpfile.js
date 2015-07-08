@@ -64,5 +64,5 @@ gulp.task('watch',['default', 'mocha-run'], function () {
   gulp.watch(['js/snippet/*'], ['snippet']);
   gulp.watch(['js/async/*', 'js/polyfills/*.js'], ['async']);
   gulp.watch(['gulpfile.js', 'styles/**/*'],['sass-iframe', 'sass-widget']);
-  gulp.watch(['js/**/*'],['mocha-run'])
+  gulp.watch(['js/**/*', 'test/**/*'],['mocha-run'])
 });
