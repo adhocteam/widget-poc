@@ -3472,12 +3472,54 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
 $(document).ready(function(){
   var forEach = Array.prototype.forEach;
 
+  var checkCoverage = function(planId, data){
+    var output = {};
+    // Consider it covered if the planId and the entity id share any chars
+    var planChars = planId.toString().split('');
+    $.each(data, function(type, list){
+      var typeList = output[type] = {};
+      $.each(list, function(i, id){
+        var found = false;
+        var idChars = id.toString().split('');
+        for (var i=0; i<idChars.length; i++){
+          if (planChars.indexOf(idChars[i]) > -1) found = true;
+        }
+        typeList[id] = found;
+      });
+        
+    });
+    console.log(output);
+    return output;
+  }
+  
   var dummyData = {
-    '123456': {doctors: [4,6], scrips: [1,3], facilities: [0,1]},
-    '654321': {doctors: [6,6], scrips: [2,3], facilities: [1,1]},
-    '111111': {doctors: [1,6], scrips: [0,3], facilities: [1,1]}
+    doctors: [1,2,3,9,8,6],
+    scrips: [45, 66, 89],
+    facilities: [345]
   };
 
+  var rollUpCoverage = function(coverageData){
+    var output = {}
+    $.each(coverageData, function(type, data){
+      var coveredCount = 0,
+          uncoveredCount = 0;
+      $.each(data, function(id, value){
+        if (value){
+          coveredCount++;
+        } else {
+          uncoveredCount++;
+        }
+      });
+      output[type] = {covered: coveredCount, uncovered: uncoveredCount, total: coveredCount+uncoveredCount};
+    });
+    console.log(output);
+    return output;
+  }
+  
+  var getMyData = function(){
+    return dummyData;
+  }
+  
   var dispatchToParent = function(payload){
     window.parent.postMessage(
       JSON.stringify(payload),
@@ -3486,7 +3528,10 @@ $(document).ready(function(){
   }
 
   var emitOverlay = function(){
-    var data = {doctors: 6, scrips: 3, facilities: 1};
+    var dataPayload = getMyData();
+    var data = {doctors: dataPayload.doctors.length,
+                scrips: dataPayload.scrips.length,
+                facilities: dataPayload.facilities.length};
     var dispatch = document.createElement('div');
     riot.mountTo(dispatch, 'plan-overlay', data);
     dispatchToParent({overlayContent: dispatch.innerHTML});
@@ -3497,7 +3542,7 @@ $(document).ready(function(){
   }
   
   var emitFactsAboutId = function(id){
-    var data = dummyData[id];
+    var data = rollUpCoverage(checkCoverage(id, getMyData()));
     if (data){
       data.planID = id;
       var dispatch = document.createElement('div');
@@ -3526,7 +3571,7 @@ $(document).ready(function(){
     input = JSON.parse(params['input']);
   } catch(err) {
   }
-  forEach.call(input, function(planBlock){
+  $.each(input, function(i, planBlock){
     emitFactsAboutId(planBlock.id);
   });
   emitOverlay();
@@ -3541,6 +3586,6 @@ riot.tag('overlay-line', '<li> {opts.label}: {opts.count} <a href="javascript:;"
 
 });
 
-riot.tag('plan-details', '<div class="planDetails"><ul><li>Doctors: {opts.doctors[0]} of {opts.doctors[1]}</li><li>Prescriptions: {opts.scrips[0]} of {opts.scrips[1]}</li><li>Facilities: {opts.facilities[0]} of {opts.facilities[1]}</li></ul><a href="javascript:" data-plan-id="{opts.planID}" data-modal=true>View All</a></div>', function(opts) {
+riot.tag('plan-details', '<div class="planDetails"><ul><li>Doctors: {opts.doctors.covered} of {opts.doctors.total}</li><li>Prescriptions: {opts.scrips.covered} of {opts.scrips.total}</li><li>Facilities: {opts.facilities.covered} of {opts.facilities.total}</li></ul><a href="javascript:" data-plan-id="{opts.planID}" data-modal=true>View All</a></div>', function(opts) {
 
 });

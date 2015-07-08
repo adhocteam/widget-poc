@@ -41,7 +41,7 @@ describe('opening a modal', function(){
         return document.querySelectorAll('.planDetails')[1]
           .getElementsByTagName('li')[0].innerText
       }, function(text){
-        expect(text).to.equal('Doctors: 6 of 6')
+        expect(text).to.equal('Doctors: 4 of 6')
       })
       .click('[data-plan-id="123456"] div.planDetails a')
       .wait('.modal-visible')
