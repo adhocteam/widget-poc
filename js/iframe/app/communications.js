@@ -13,7 +13,7 @@ var WidgetApp = WidgetApp || {};
                 scrips: dataPayload.scrips.length,
                 facilities: dataPayload.facilities.length};
     var dispatch = document.createElement('div');
-    riot.mountTo(dispatch, 'plan-overlay', data);
+    riot.mount(dispatch, 'plan-overlay', data);
     dispatchToParent({overlayContent: dispatch.innerHTML});
   }
 
@@ -26,7 +26,7 @@ var WidgetApp = WidgetApp || {};
     if (data){
       data.planID = id;
       var dispatch = document.createElement('div');
-      riot.mountTo(dispatch, 'plan-details', data);
+      riot.mount(dispatch, 'plan-details', data);
       var planData = {};
       planData[id] = dispatch.innerHTML;
       dispatchToParent({planData: planData});
