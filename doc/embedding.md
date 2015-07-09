@@ -6,8 +6,6 @@
    <div data-plan-id="<plan-id>"></div>
    ```
 
-    Provide whatever data-* attributes the given page knows about.
-
 2. Include the javascript (url TBD):
 
    ```

@@ -8,16 +8,29 @@
    <script type="text/javascript" src="build/snippet.js"></script>
    ```
 
-2. Add links with a data-modal attribute set to the value you'd like to pass to the iFrame
+2. Add a container for the coverage data for each plan on the page to be injected into:
 
    ```
-   <a href="javascript:" data-modal="Initial Value">Open iFrame</a>
+   <div data-plan-id="<plan-id>"></div>
    ```
 
 ## Building
 
+Install http-server globally with:
+
+```
+npm install http-server -g
+```
+
+Then:
+
 ```
 npm install
-gulp default watch
-open index.html
+gulp
+http-server
+open http://localhost:8080
 ```
+
+#### Note:
+
+The origin/target domain matching will not work when served via a file:/// URI scheme
