@@ -1,6 +1,6 @@
 var WidgetApp = WidgetApp || {};
 
-$(document).ready(function(){
+document.addEventListener("DOMContentLoaded", function(event) { 
   WidgetApp.routes.bind();
   WidgetApp.bindListeners();
   WidgetApp.emitOverlay();
