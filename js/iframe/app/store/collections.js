@@ -43,6 +43,7 @@ var WidgetApp = WidgetApp || {};
       return (entity.id == id)
     });
     this.persist();
+    return(this.data);
   }
 
   store.doctorCollection = Object.create(entityProto, {storageKey: {value: 'doctors'}});

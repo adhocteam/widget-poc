@@ -5215,7 +5215,10 @@ var WidgetApp = WidgetApp || {};
   var controller = WidgetApp.controllers['doctors'] = {};
   controller.init = function(){
     var collection = WidgetApp.store.doctorCollection;
-    var tag = riot.mount('body', 'doctors-page', {data: collection.data})[0];
+    var tag = riot.mount('body', 'doctors-page', {collection: collection})[0];
+    tag.on('remove', function(id){
+      this.collection = collection.remove(id);
+    });
   }
 })();
 
@@ -5284,6 +5287,7 @@ var WidgetApp = WidgetApp || {};
       return (entity.id == id)
     });
     this.persist();
+    return(this.data);
   }
 
   store.doctorCollection = Object.create(entityProto, {storageKey: {value: 'doctors'}});
@@ -5299,8 +5303,12 @@ var WidgetApp = WidgetApp || {};
   
 })();
 
-riot.tag('doctors-page', '<h3>Doctors</h3>', function(opts) {
-
+riot.tag('doctors-page', '<h3>Doctors</h3><ul><li each="{collection}"> {name} <a href="javascript:" onclick="{remove}">X</a></li></ul>', function(opts) {
+    this.collection = opts.collection.data
+    this.remove = function(e) {
+      this.trigger('remove', e.item.id)
+    }.bind(this);
+  
 });
 
 riot.tag('facilities-page', '<h3>Facilities</h3>', function(opts) {
