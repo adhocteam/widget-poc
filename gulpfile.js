@@ -26,7 +26,7 @@ gulp.task('snippet', function() {
 });
 
 gulp.task('iframe', ['riot'], function(){
-  return gulp.src(['./js/polyfills/*.js', './js/common/*.js', './node_modules/riot/riot.js', './node_modules/URIjs/src/URI.js', './js/iframe/*.js', './js/iframe/app/**/*.js', './js/riot/*.js'])
+  return gulp.src(['./js/polyfills/*.js', './node_modules/underscore/underscore.js', './js/common/*.js', './node_modules/riot/riot.js', './node_modules/URIjs/src/URI.js', './js/iframe/*.js', './js/iframe/app/**/*.js', './js/riot/*.js'])
     .pipe(print())
     //.pipe(uglify())
     .pipe(concat('iframe.js'))
@@ -64,7 +64,7 @@ gulp.task('mocha-run', function() {
 
 gulp.task('watch',['mocha-run'], function () {
   gulp.watch(['js/*', 'gulpfile.js'], ['default']);
-  gulp.watch(['js/iframe/*', 'js/polyfills/*.js'], ['iframe']);
+  gulp.watch(['js/iframe/**/*', 'js/polyfills/*.js'], ['iframe']);
   gulp.watch(['js/snippet/*'], ['snippet']);
   gulp.watch(['js/async/*', 'js/polyfills/*.js'], ['async']);
   gulp.watch(['gulpfile.js', 'styles/**/*'],['sass-iframe', 'sass-widget']);
