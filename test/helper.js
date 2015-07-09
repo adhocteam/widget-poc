@@ -22,5 +22,10 @@ before(function(){
   startServer();
   
 });
+var url = "http://localhost:8357?fixtures=true";
+beforeEach(function(){
+  nightmare = new Nightmare;
+  nightmare.goto(url);
+})
 
 

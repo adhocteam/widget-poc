@@ -1,11 +1,5 @@
-var url = "http://localhost:8357"
 describe('opening a modal', function(){
   this.timeout(30000);
-  var nightmare;
-  beforeEach(function(){
-    nightmare = new Nightmare;
-    nightmare.goto(url);
-  });
 
   var firstIframeTagText = function(tagname){
     return document.querySelector('.modal-content iframe').contentDocument
