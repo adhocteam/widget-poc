@@ -22,7 +22,7 @@ var WidgetApp = WidgetApp || {};
   }
   
   WidgetApp.emitFactsAboutId = function(id){
-    var data = this.store.rollUpCoverage(this.store.checkCoverage(id, this.store.getMyEntities()));
+    var data = this.store.rolledUpCoverageFor(id);
     if (data){
       data.planID = id;
       var dispatch = document.createElement('div');
