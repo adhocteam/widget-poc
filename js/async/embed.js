@@ -60,6 +60,8 @@ window.PlanCompareWidget.init = function(){
         };
         notifyPlans(replyWith);
         modal.openChannel(replyWith);
+      } else if (payload.dataChanged){
+        notifyPlans(modal.dispatchFunc)
       } else if (payload.planData){
         updatePlans(payload.planData);
       } else if (payload.overlayContent){

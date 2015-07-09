@@ -7,28 +7,43 @@ var WidgetApp = WidgetApp || {};
     );
   }
 
+  var extractCounts = function(data){
+    var output = {}
+    for (key in data){
+      if(data.hasOwnProperty(key)){
+        output[key] = data[key].length
+      }
+    }
+    return output;
+  }
+  
   WidgetApp.emitOverlay = function(){
-    var dataPayload = this.store.getMyEntities();
-    var data = {doctors: dataPayload.doctors.length,
-                scrips: dataPayload.scrips.length,
-                facilities: dataPayload.facilities.length};
-    var dispatch = document.createElement('div');
-    riot.mount(dispatch, 'plan-overlay', data);
-    dispatchToParent({overlayContent: dispatch.innerHTML});
+    var data = extractCounts(this.store.getMyEntities())
+    dispatchToParent({overlayContent: contentFor('plan-overlay', data)});
   }
 
+  WidgetApp.emitDataChanged = function(){
+    dispatchToParent({dataChanged: true});
+  }
+  
   WidgetApp.emitInit = function(){
     dispatchToParent({init: true});
+  }
+
+  var contentFor = function(template, data){
+    var dispatch = document.createElement('div');
+    var node = riot.mount(dispatch, template, data)[0];
+    var content = dispatch.innerHTML;
+    node.unmount();
+    return content;
   }
   
   WidgetApp.emitFactsAboutId = function(id){
     var data = this.store.rolledUpCoverageFor(id);
     if (data){
       data.planID = id;
-      var dispatch = document.createElement('div');
-      riot.mount(dispatch, 'plan-details', data);
       var planData = {};
-      planData[id] = dispatch.innerHTML;
+      planData[id] = contentFor('plan-details', data)
       dispatchToParent({planData: planData});
     }
   }
