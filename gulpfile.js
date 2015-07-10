@@ -63,6 +63,7 @@ gulp.task('mocha-run', function() {
 });
 
 gulp.task('watch',['mocha-run'], function () {
+  gulp.watch(['./templates/**/*.tag'],['riot'])
   gulp.watch(['js/*', 'gulpfile.js'], ['default']);
   gulp.watch(['js/iframe/**/*', 'js/polyfills/*.js'], ['iframe']);
   gulp.watch(['js/snippet/*'], ['snippet']);
