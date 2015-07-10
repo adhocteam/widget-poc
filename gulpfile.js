@@ -26,7 +26,7 @@ gulp.task('snippet', function() {
 });
 
 gulp.task('iframe', ['riot'], function(){
-  return gulp.src(['./js/polyfills/*.js', './node_modules/underscore/underscore.js', './js/common/*.js', './node_modules/riot/riot.js', './node_modules/URIjs/src/URI.js', './js/iframe/*.js', './js/iframe/app/**/*.js', './js/riot/*.js'])
+  return gulp.src(['./js/polyfills/*.js', './node_modules/underscore/underscore.js', './js/common/*.js', './node_modules/riot/riot.js', './node_modules/URIjs/src/URI.js', './js/iframe/*.js', './js/iframe/app/*.js','./js/iframe/app/**/*.js',  './js/riot/*.js'])
     .pipe(print())
     //.pipe(uglify())
     .pipe(concat('iframe.js'))
