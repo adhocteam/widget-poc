@@ -26,7 +26,7 @@ var WidgetApp = WidgetApp || {};
     document.dispatchEvent(event);
   }
   entityProto.load = function(){
-    this.data = retrieveFromStorage(this.storageKey);
+    this.data = retrieveFromStorage(this.storageKey) || [];
     document.dispatchEvent(event);
     return this.data;
   }
