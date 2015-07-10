@@ -11,7 +11,7 @@
 2. Add a container for the coverage data for each plan on the page to be injected into:
 
    ```
-   <div data-plan-id="<plan-id>"></div>
+   <div data-plan-id="<plan-id>" data-zip-code="<zip-code>"></div>
    ```
 
 ## Building
