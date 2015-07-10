@@ -5100,6 +5100,22 @@ var WidgetApp = WidgetApp || {};
 
 var WidgetApp = WidgetApp || {};
 (function(){
+  WidgetApp.controllers = WidgetApp.controllers || {};
+  WidgetApp.listControllerFor = function(collectionName){
+    var controller = {}
+    controller.init = function(tag){
+      var collection = WidgetApp.store[collectionName];
+      tag.remove = function(e){
+        this.collection = collection.remove(e.item.id);
+      }.bind(tag)
+      tag.collection = collection.data;
+    }
+    return controller;
+  }
+})();
+
+var WidgetApp = WidgetApp || {};
+(function(){
   WidgetApp.bindListeners = function(){
     window.addEventListener("message", function(event){
       // Only accept same-origin messages for now
@@ -5125,18 +5141,14 @@ var WidgetApp = WidgetApp || {};
 
   var routes = {
     plans: {'id': 'plan-page', 'default': 'plans-page'},
-    doctors: {controller: 'doctors'},
-    scrips: {controller: 'scrips'},
-    facilities: {controller: 'facilities'},
+    list: 'list',
     'default': 'home-page',
     'home': 'home-page'
   }
   
   var routeFunction = function(collection, id, action){
     var baseRoute = routes[collection] || routes['default'];
-    if (baseRoute.controller){
-      WidgetApp.controllers[baseRoute.controller].init();
-    } else if (id && baseRoute.id) {
+    if (id && baseRoute.id) {
       var ids = id.toString().split(',');
       if (ids.length == 1){
         riot.mount('body', baseRoute.id, {id: id});
@@ -5180,19 +5192,23 @@ var WidgetApp = WidgetApp || {};
           _.map(list, function(entity){
             var idChars = entity.id.toString().split('');
             var found = !!(_.intersection(planChars, idChars).length)
-            return [entity.id, found]
+            return [entity.id, {covered: found, name: entity.name}]
           })
       return _.object(array);
     });
   }
   
   store.rolledUpCoverageFor = function(id){
-    return this.rollUpCoverage(this.checkCoverage(id, this.getMyEntities()));
+    return this.rollUpCoverage(this.coverageFor(id));
+  }
+
+  store.coverageFor = function(id){
+    return this.checkCoverage(id, this.getMyEntities())
   }
   
   store.rollUpCoverage = function(coverageData){
     return _.mapObject(coverageData, function(data, type){
-      var grouped = _.groupBy(data);
+      var grouped = _.groupBy(data, 'covered');
       var coveredCount = (grouped['true'] || []).length;
       var uncoveredCount = (grouped['false'] || []).length;
       return {covered: coveredCount, uncovered: uncoveredCount, total: coveredCount+uncoveredCount};
@@ -5209,37 +5225,25 @@ var WidgetApp = WidgetApp || {};
 
 })();
 
-var WidgetApp = WidgetApp || {};
 (function(){
-  WidgetApp.controllers = WidgetApp.controllers || {};
-  var controller = WidgetApp.controllers['doctors'] = {};
-  controller.init = function(){
-    var collection = WidgetApp.store.doctorCollection;
-    var tag = riot.mount('body', 'doctors-page', {collection: collection})[0];
-    tag.on('remove', function(id){
-      this.collection = collection.remove(id);
-    });
+  WidgetApp.controllers['doctors'] = WidgetApp.listControllerFor('doctorCollection')
+})();
+
+(function(){
+  WidgetApp.controllers['facilities'] = WidgetApp.listControllerFor('facilityCollection')
+})();
+
+(function(){
+  var controller = WidgetApp.controllers['plan-coverage'] = {};
+  controller.init = function(tag, id){
+    var coverage = WidgetApp.store.coverageFor(id);
+    tag.coverage = coverage;
+    tag.rolledUp = WidgetApp.store.rollUpCoverage(coverage);
   }
 })();
 
-var WidgetApp = WidgetApp || {};
 (function(){
-  WidgetApp.controllers = WidgetApp.controllers || {};
-  var controller = WidgetApp.controllers['facilities'] = {};
-  controller.init = function(){
-    var collection = WidgetApp.store.facilityCollection;
-    var tag = riot.mount('body', 'facilities-page', {data: collection.data})[0];
-  }
-})();
-
-var WidgetApp = WidgetApp || {};
-(function(){
-  WidgetApp.controllers = WidgetApp.controllers || {};
-  var controller = WidgetApp.controllers['scrips'] = {};
-  controller.init = function(){
-    var collection = WidgetApp.store.scripCollection;
-    var tag = riot.mount('body', 'scrips-page', {data: collection.data})[0];
-  }
+  WidgetApp.controllers['scrips'] = WidgetApp.listControllerFor('scripCollection')
 })();
 
 var WidgetApp = WidgetApp || {};
@@ -5270,7 +5274,7 @@ var WidgetApp = WidgetApp || {};
     document.dispatchEvent(event);
   }
   entityProto.load = function(){
-    this.data = retrieveFromStorage(this.storageKey);
+    this.data = retrieveFromStorage(this.storageKey) || [];
     document.dispatchEvent(event);
     return this.data;
   }
@@ -5303,38 +5307,46 @@ var WidgetApp = WidgetApp || {};
   
 })();
 
-riot.tag('doctors-page', '<h3>Doctors</h3><ul><li each="{collection}"> {name} <a href="javascript:" onclick="{remove}">X</a></li></ul>', function(opts) {
-    this.collection = opts.collection.data
-    this.remove = function(e) {
-      this.trigger('remove', e.item.id)
-    }.bind(this);
+riot.tag('coverage-set', '<h4 if="{!_.isEmpty(opts.collection)}">{opts.title} {opts.rollup.covered}/{opts.rollup.total}</h4><ul if="{!_.isEmpty(opts.collection)}"><li> Name <span class="coverage">Covered?</span></li><li each="{key, value in opts.collection}"> {value.name} <span class="coverage:true covered:item.covered"> {value.covered ? \'Yes\' : \'No\'} </span></li></ul>', function(opts) {
+
+});
+
+riot.tag('doctors-page', '<h3>Doctors</h3><ul if="{collection.length}"><li each="{collection}"> {name} <a href="javascript:" onclick="{remove}">X</a></li></ul><div if="{!collection.length}"> No doctors added! </div>', function(opts) {
+    WidgetApp.controllers['doctors'].init(this);
   
 });
 
-riot.tag('facilities-page', '<h3>Facilities</h3>', function(opts) {
-
+riot.tag('facilities-page', '<h3>Facilities</h3><ul if="{collection.length}"><li each="{collection}"> {name} <a href="javascript:" onclick="{remove}">X</a></li></ul><div if="{!collection.length}"> No facilities added! </div>', function(opts) {
+    WidgetApp.controllers['facilities'].init(this);
+  
 });
 
 riot.tag('home-page', '<h1>Content Here</h1><p>Content goes here</p>', function(opts) {
 
 });
 
-riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.scrips}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true class="overlay all">View All / Edit</a></div>', function(opts) {
+riot.tag('list', '<doctors-page></doctors-page><scrips-page></scrips-page><facilities-page></facilities-page>', function(opts) {
 
 });
 
-riot.tag('overlay-line', '<li> {opts.label}: {opts.count} <a href="javascript:;" data-section="{opts.section}" data-modal="true">View/Edit</a></li>', function(opts) {
+riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.scrips}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true class="overlay all" data-section="list">View All / Edit</a></div>', function(opts) {
 
 });
 
-riot.tag('plan-page', '<p> Plan ID: {opts.id} </p>', function(opts) {
+riot.tag('overlay-line', '<li> {opts.label}: {opts.count} </li>', function(opts) {
 
+});
+
+riot.tag('plan-page', '<h3> Plan ID: {opts.id} </h3><coverage-set title="Doctors" collection="{coverage.doctors}" rollup="{rolledUp.doctors}"></coverage-set><coverage-set title="Prescriptions" collection="{coverage.scrips}" rollup="{rolledUp.scrips}"></coverage-set><coverage-set title="Facilities" collection="{coverage.facilities}" rollup="{rolledUp.facilities}"></coverage-set>', function(opts) {
+    WidgetApp.controllers['plan-coverage'].init(this, opts.id)
+  
 });
 
 riot.tag('plan-details', '<div class="planDetails"><ul><li>Doctors: {opts.doctors.covered} of {opts.doctors.total}</li><li>Prescriptions: {opts.scrips.covered} of {opts.scrips.total}</li><li>Facilities: {opts.facilities.covered} of {opts.facilities.total}</li></ul><a href="javascript:" data-plan-id="{opts.planID}" data-modal=true>View All</a></div>', function(opts) {
 
 });
 
-riot.tag('scrips-page', '<h3>Prescriptions</h3>', function(opts) {
-
+riot.tag('scrips-page', '<h3>Prescriptions</h3><ul if="{collection.length}"><li each="{collection}"> {name} <a href="javascript:" onclick="{remove}">X</a></li></ul><div if="{!collection.length}"> No prescriptions added! </div>', function(opts) {
+    WidgetApp.controllers['scrips'].init(this);
+  
 });
