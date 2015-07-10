@@ -11,19 +11,23 @@ var WidgetApp = WidgetApp || {};
           _.map(list, function(entity){
             var idChars = entity.id.toString().split('');
             var found = !!(_.intersection(planChars, idChars).length)
-            return [entity.id, found]
+            return [entity.id, {covered: found, name: entity.name}]
           })
       return _.object(array);
     });
   }
   
   store.rolledUpCoverageFor = function(id){
-    return this.rollUpCoverage(this.checkCoverage(id, this.getMyEntities()));
+    return this.rollUpCoverage(this.coverageFor(id));
+  }
+
+  store.coverageFor = function(id){
+    return this.checkCoverage(id, this.getMyEntities())
   }
   
   store.rollUpCoverage = function(coverageData){
     return _.mapObject(coverageData, function(data, type){
-      var grouped = _.groupBy(data);
+      var grouped = _.groupBy(data, 'covered');
       var coveredCount = (grouped['true'] || []).length;
       var uncoveredCount = (grouped['false'] || []).length;
       return {covered: coveredCount, uncovered: uncoveredCount, total: coveredCount+uncoveredCount};
