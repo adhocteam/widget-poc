@@ -3,18 +3,14 @@ var WidgetApp = WidgetApp || {};
 
   var routes = {
     plans: {'id': 'plan-page', 'default': 'plans-page'},
-    doctors: {controller: 'doctors'},
-    scrips: {controller: 'scrips'},
-    facilities: {controller: 'facilities'},
+    list: 'list',
     'default': 'home-page',
     'home': 'home-page'
   }
   
   var routeFunction = function(collection, id, action){
     var baseRoute = routes[collection] || routes['default'];
-    if (baseRoute.controller){
-      WidgetApp.controllers[baseRoute.controller].init();
-    } else if (id && baseRoute.id) {
+    if (id && baseRoute.id) {
       var ids = id.toString().split(',');
       if (ids.length == 1){
         riot.mount('body', baseRoute.id, {id: id});
