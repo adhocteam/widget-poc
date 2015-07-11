@@ -7,32 +7,26 @@ describe('opening a modal', function(){
   };
   
   it('should display coverage information and navigate to plan on click', function(done){
-    nightmare
-      .wait('.planDetails')
-      .evaluate(function(){
-        return document.querySelectorAll('.planDetails')[1]
-          .getElementsByTagName('li')[0].innerText
-      }, function(text){
-        expect(text).to.equal('Doctors: 4 of 6')
-      })
-      .click('[data-plan-id="123456"] div.planDetails a')
-      .wait('.modal-visible')
-      .evaluate(firstIframeTagText, function(text){
-        expect(text).to.include('Plan ID: 123456')
-      }, 'h3')
-      .run(done);
+    horseman.waitForSelector('.planDetails');
+    var text = horseman.evaluate(function(){
+      return $('.planDetails')[1].getElementsByTagName('li')[0].innerText
+    })
+    expect(text).to.equal('Doctors: 4 of 6')
+    horseman.click('[data-plan-id="123456"] div.planDetails a')
+    horseman.waitForSelector('.modal-visible')
+      .switchToChildFrame(0)
+    expect(horseman.text('h3')).to.include('Plan ID: 123456')
+    
+    done();
   });
 
   it('should display overlay rollup', function(done){
-    nightmare
-      .wait('.overlayDetails')
-      .evaluate(function(){
-        return document.querySelector('.overlayDetails')
-          .getElementsByTagName('li')[0].innerText
-      }, function(text){
-        expect(text).to.include('Doctors: 6')
-      })
-      .run(done)
+    horseman.waitForSelector('.overlayDetails')
+    var text = horseman.evaluate(function(){
+      return $('.overlayDetails li')[0].innerText
+    })
+    expect(text).to.include('Doctors: 6')
+    done();
   });
 
   describe('having opened management list', function(){
@@ -47,6 +41,22 @@ describe('opening a modal', function(){
         .evaluate(firstIframeTagText, function(text){
           expect(text).to.include('Doctors')
         }, 'h3')
+        .run(done)
+    })
+
+    xit('should remove a facilitity', function(done){
+      nightmare
+        .evaluate(function(){
+          this.page.switchToChildFrame(0);
+        })
+        .click('.facilities-list li a')
+        .evaluate(function(){
+          return document.querySelector('facilities-page').innerText
+        
+        }, function(text){
+          expect(text).to.include('No facilities added')
+        })
+        .screenshot('screen.png')
         .run(done)
     })
     

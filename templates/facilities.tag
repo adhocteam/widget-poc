@@ -1,6 +1,6 @@
 <facilities-page>
   <h3>Facilities</h3>
-  <ul if={collection.length}>
+  <ul class="facilities-list" if={collection.length}>
     <li each={collection}>
       {name} <a href="javascript:" onclick={remove}>X</a>
     </li>

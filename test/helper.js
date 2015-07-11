@@ -17,15 +17,19 @@ var startServer = function(){
 before(function(){
 
   Nightmare = require('nightmare');
+  Horseman = require('node-horseman');
   expect = require('chai').expect;
-
+  
   startServer();
   
 });
-var url = "http://localhost:8357?fixtures=true";
+url = "http://localhost:8357?fixtures=true";
 beforeEach(function(){
+  horseman = new Horseman();
   nightmare = new Nightmare;
+  nightmare.viewport(900, 900)
   nightmare.goto(url);
+  horseman.open(url)
 })
 
 

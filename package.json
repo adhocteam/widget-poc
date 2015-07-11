@@ -24,6 +24,7 @@
     "gulp-util": "^3.0.6",
     "mocha": "^2.2.5",
     "nightmare": "^1.8.2",
+    "node-horseman": "^1.5.2",
     "phantomjs": "^1.9.17",
     "requirejs": "^2.1.18",
     "serve-static": "^1.10.0"
