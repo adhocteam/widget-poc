@@ -31,33 +31,27 @@ describe('opening a modal', function(){
 
   describe('having opened management list', function(){
     beforeEach(function(){
-      nightmare.wait('.overlayDetails')
+      horseman.waitForSelector('.overlayDetails')
         .click('.overlayDetails a')
-        .wait('.modal-visible')
+        .waitForSelector('.modal-visible')
+        .switchToChildFrame(0)
     })
 
     it('should show doctors', function(done){
-      nightmare
-        .evaluate(firstIframeTagText, function(text){
-          expect(text).to.include('Doctors')
-        }, 'h3')
-        .run(done)
+      expect(horseman.text('h3')).to.include('Doctors')
+      done();
     })
 
-    xit('should remove a facilitity', function(done){
-      nightmare
-        .evaluate(function(){
-          this.page.switchToChildFrame(0);
-        })
-        .click('.facilities-list li a')
-        .evaluate(function(){
-          return document.querySelector('facilities-page').innerText
-        
-        }, function(text){
-          expect(text).to.include('No facilities added')
-        })
-        .screenshot('screen.png')
-        .run(done)
+    it('should remove a facilitity', function(done){
+      horseman.click('.facilities-list li a')
+      expect(horseman.text('facilities-page')).to.include('No facilities added')
+      horseman.click('a[rel="modal:close"]')
+      horseman.page.switchToParentFrame()
+      var text = horseman.evaluate(function(){
+        return $('.planDetails')[1].getElementsByTagName('li')[2].innerText
+      })
+      expect(text).to.include('0 of 0')
+      done()                               
     })
     
   })

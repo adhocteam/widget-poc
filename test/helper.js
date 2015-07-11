@@ -16,7 +16,6 @@ var startServer = function(){
 
 before(function(){
 
-  Nightmare = require('nightmare');
   Horseman = require('node-horseman');
   expect = require('chai').expect;
   
@@ -26,9 +25,6 @@ before(function(){
 url = "http://localhost:8357?fixtures=true";
 beforeEach(function(){
   horseman = new Horseman();
-  nightmare = new Nightmare;
-  nightmare.viewport(900, 900)
-  nightmare.goto(url);
   horseman.open(url)
 })
 
