@@ -47,13 +47,13 @@ var WidgetApp = WidgetApp || {};
   }
 
   store.doctorCollection = Object.create(entityProto, {storageKey: {value: 'doctors'}});
-  store.scripCollection = Object.create(entityProto, {storageKey: {value: 'scrips'}});
+  store.drugCollection = Object.create(entityProto, {storageKey: {value: 'drugs'}});
   store.facilityCollection = Object.create(entityProto, {storageKey: {value: 'facilities'}});
   
   
 
   store.facilityCollection.load();
-  store.scripCollection.load();
+  store.drugCollection.load();
   store.doctorCollection.load();
   
   

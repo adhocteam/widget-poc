@@ -1,3 +1,3 @@
 (function(){
-  WidgetApp.controllers['scrips'] = WidgetApp.listControllerFor('scripCollection')
+  WidgetApp.controllers['scrips'] = WidgetApp.listControllerFor('drugCollection')
 })();

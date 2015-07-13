@@ -71,7 +71,7 @@ var WidgetApp = WidgetApp || {};
   store.getMyEntities = function(){
     return {
       doctors: this.doctorCollection.data,
-      scrips: this.scripCollection.data,
+      drugs: this.drugCollection.data,
       facilities: this.facilityCollection.data
     }
   }

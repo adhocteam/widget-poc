@@ -5252,7 +5252,7 @@ var WidgetApp = WidgetApp || {};
   store.getMyEntities = function(){
     return {
       doctors: this.doctorCollection.data,
-      scrips: this.scripCollection.data,
+      drugs: this.drugCollection.data,
       facilities: this.facilityCollection.data
     }
   }
@@ -5364,13 +5364,13 @@ var WidgetApp = WidgetApp || {};
   }
 
   store.doctorCollection = Object.create(entityProto, {storageKey: {value: 'doctors'}});
-  store.scripCollection = Object.create(entityProto, {storageKey: {value: 'scrips'}});
+  store.drugCollection = Object.create(entityProto, {storageKey: {value: 'drugs'}});
   store.facilityCollection = Object.create(entityProto, {storageKey: {value: 'facilities'}});
   
   
 
   store.facilityCollection.load();
-  store.scripCollection.load();
+  store.drugCollection.load();
   store.doctorCollection.load();
   
   
@@ -5398,7 +5398,7 @@ riot.tag('list', '<doctors-page></doctors-page><scrips-page></scrips-page><facil
 
 });
 
-riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.scrips}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true class="overlay all" data-section="list">View All / Edit</a></div>', function(opts) {
+riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.drugs}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true class="overlay all" data-section="list">View All / Edit</a></div>', function(opts) {
 
 });
 
@@ -5406,12 +5406,12 @@ riot.tag('overlay-line', '<li> {opts.label}: {opts.count} </li>', function(opts)
 
 });
 
-riot.tag('plan-page', '<h3> Plan ID: {opts.id} </h3><coverage-set title="Doctors" collection="{coverage.doctors}" rollup="{rolledUp.doctors}"></coverage-set><coverage-set title="Prescriptions" collection="{coverage.scrips}" rollup="{rolledUp.scrips}"></coverage-set><coverage-set title="Facilities" collection="{coverage.facilities}" rollup="{rolledUp.facilities}"></coverage-set>', function(opts) {
+riot.tag('plan-page', '<h3> Plan ID: {opts.id} </h3><coverage-set title="Doctors" collection="{coverage.doctors}" rollup="{rolledUp.doctors}"></coverage-set><coverage-set title="Prescriptions" collection="{coverage.drugs}" rollup="{rolledUp.drugs}"></coverage-set><coverage-set title="Facilities" collection="{coverage.facilities}" rollup="{rolledUp.facilities}"></coverage-set>', function(opts) {
     WidgetApp.controllers['plan-coverage'].init(this, opts.id)
   
 });
 
-riot.tag('plan-details', '<div class="planDetails"><ul><li>Doctors: {opts.doctors.covered} of {opts.doctors.total}</li><li>Prescriptions: {opts.scrips.covered} of {opts.scrips.total}</li><li>Facilities: {opts.facilities.covered} of {opts.facilities.total}</li></ul><a href="javascript:" data-plan-id="{opts.planID}" data-modal=true>View All</a></div>', function(opts) {
+riot.tag('plan-details', '<div class="planDetails"><ul><li>Doctors: {opts.doctors.covered} of {opts.doctors.total}</li><li>Prescriptions: {opts.drugs.covered} of {opts.drugs.total}</li><li>Facilities: {opts.facilities.covered} of {opts.facilities.total}</li></ul><a href="javascript:" data-plan-id="{opts.planID}" data-modal=true>View All</a></div>', function(opts) {
 
 });
 

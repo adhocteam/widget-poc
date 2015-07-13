@@ -10,7 +10,7 @@ if (location.href.match('fixtures=true')){
     {id: 8, name: "Elenora Jakubowski"},
     {id: 6, name: "Evie Macejkovic"}
   ]);
-  sendToStorage('scrips', [
+  sendToStorage('drugs', [
     {id: 45, name: 'benadryl'},
     {id: 66, name: 'aspirin'},
     {id: 89, name: 'ranitidine'}
