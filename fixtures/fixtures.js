@@ -3,12 +3,12 @@ if (location.href.match('fixtures=true')){
     localStorage[key] = JSON.stringify(data);
   }
   sendToStorage('doctors', [
-    {id: 1, name: 'Doctor A'},
-    {id: 2, name: 'Doctor B'},
-    {id: 3, name: 'Doctor C'},
-    {id: 9, name: 'Doctor D'},
-    {id: 8, name: 'Doctor E'},
-    {id: 6, name: 'Doctor F'}
+    {id: 1, name: "Ephraim Ferry"},
+    {id: 2, name: "Fanny Zemlak I"},
+    {id: 3, name: "Braxton Wuckert"},
+    {id: 9, name: "Macey Yost"},
+    {id: 8, name: "Elenora Jakubowski"},
+    {id: 6, name: "Evie Macejkovic"}
   ]);
   sendToStorage('scrips', [
     {id: 45, name: 'benadryl'},
@@ -16,6 +16,8 @@ if (location.href.match('fixtures=true')){
     {id: 89, name: 'ranitidine'}
   ]);
   sendToStorage('facilities',[
-    {id: 345, name: 'A Place'}
+    {id: 345, name: 'Massachusetts General Hospital'}
   ]);
 }
+
+

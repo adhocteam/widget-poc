@@ -45,9 +45,7 @@ describe('opening a modal', function(){
     it('should remove a facilitity', function(done){
       horseman.click('.facilities-list li a')
       expect(horseman.text('facilities-page')).to.include('No facilities added')
-      
-      
-      done()                               
+      done();
     })
 
     describe('having removed a facility', function(){
@@ -62,7 +60,7 @@ describe('opening a modal', function(){
           return $('.planDetails')[1].getElementsByTagName('li')[2].innerText
         })
         expect(text).to.include('0 of 0')
-        done()
+        done();
       })
 
       it('should not have a facility block in the plan details', function(done){
@@ -70,7 +68,7 @@ describe('opening a modal', function(){
         horseman.waitForSelector('.modal-visible')
           .switchToChildFrame(0)
         expect(horseman.count('h4')).to.equal(2)
-        done()
+        done();
       })
     })
     
