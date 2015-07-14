@@ -31,7 +31,7 @@ var WidgetApp = WidgetApp || {};
     return this.data;
   }
   entityProto.push = function(element){
-    this.data.push(element);
+    this.data = _.uniq(this.data.concat([element]), function(elem){return elem.id});
     this.persist();
   }
   entityProto.set = function(elements){

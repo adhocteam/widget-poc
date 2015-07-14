@@ -4,21 +4,23 @@ var WidgetApp = WidgetApp || {};
   var routes = {
     plans: {'id': 'plan-page', 'default': 'plans-page'},
     list: 'list',
+    search: 'search-panel',
     'default': 'home-page',
     'home': 'home-page'
   }
   
   var routeFunction = function(collection, id, action){
     var baseRoute = routes[collection] || routes['default'];
+    var mounted;
     if (id && baseRoute.id) {
       var ids = id.toString().split(',');
       if (ids.length == 1){
-        riot.mount('body', baseRoute.id, {id: id});
+        mounted = riot.mount('body', baseRoute.id, {id: id})[0];
       } else {
-        riot.mount('body', baseRoute['default'], {ids: ids});
+        mounted = riot.mount('body', baseRoute['default'], {ids: ids})[0];
       }
     } else {
-      riot.mount('body', baseRoute);
+      mounted = riot.mount('body', baseRoute)[0];
     }
   };
   

@@ -51,21 +51,32 @@ var WidgetApp = WidgetApp || {};
   }
   
   store.search = function(query){
-    var tokens = _.compact(query.toLowerCase().split(/\W/));
-    var results = _.mapObject(store.stubData, function(value, key){
-      return _.filter(value, function(entity){
-        var matchables = _.map(_.compact([entity.name, entity.specialty]), function(m){
-          return m.toLowerCase();
-        });
-        var tokenMatches = function(token){
-          return orStream(
-            matchables, _.partial(hasMatch, _, token)
-          )
-        }
-        return andStream(tokens, tokenMatches)
+    return Q.fcall(function(){
+      if (!query) return false;
+      var tokens = _.compact(query.toLowerCase().split(/\W/));
+      return _.mapObject(store.stubData, function(list, key){
+        return _.filter(list, function(entity){
+          var matchables = _.map(_.compact([entity.name, entity.specialty]), function(m){
+            return m.toLowerCase();
+          });
+          var tokenMatches = function(token){
+            return orStream(
+              matchables, _.partial(hasMatch, _, token)
+            )
+          }
+          return !store.entityAdded(entity, key) && andStream(tokens, tokenMatches)
+        })
       })
-    })
-    return results
+    });
+  }
+
+  store.entityAdded = function(entity, key){
+    if (entity && entity.id){
+      var entityList = store.getMyEntities()[key]
+      return _.find(entityList, function(elem){return elem.id == entity.id})
+    }
+    
+      
   }
   
   store.getMyEntities = function(){
