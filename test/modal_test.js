@@ -28,7 +28,7 @@ describe('opening a modal', function(){
     expect(text).to.include('Doctors: 6')
     done();
   });
-
+  
   describe('having opened management list', function(){
     beforeEach(function(){
       horseman.waitForSelector('.overlayDetails')
@@ -36,7 +36,7 @@ describe('opening a modal', function(){
         .waitForSelector('.modal-visible')
         .switchToChildFrame(0)
     })
-
+    
     it('should show doctors', function(done){
       expect(horseman.text('h3')).to.include('Doctors')
       done();
@@ -71,6 +71,37 @@ describe('opening a modal', function(){
         done();
       })
     })
+
+    describe('Searching for stuff', function(){
+      it('should search and find a drug', function(done){
+        horseman.click(".nav a")
+          .type('input[name="query"]', 'flutic')
+          .click("button").waitForSelector('search-panel')
+        expect(horseman.count('.drugs li')).to.equal(1)
+        done();
+      });
+
+      describe('having searched', function(){
+        beforeEach(function(){
+          horseman.click(".nav a")
+            .type('input[name="query"]', 'flutic')
+            .click("button").waitForSelector('search-panel')
+        });
+
+        it('should add a drug', function(done){
+          horseman.click(".drugs a")
+            .click('a[rel="modal:close"]');
+          horseman.page.switchToParentFrame();
+          var text = horseman.evaluate(function(){
+            return $('.planDetails')[1].getElementsByTagName('li')[1].innerText
+          })
+          expect(text).to.equal('Prescriptions: 3 of 4')
+          done();
+        });
+        
+      });
+
+    });
     
   })
 });
