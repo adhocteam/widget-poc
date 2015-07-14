@@ -25,7 +25,11 @@ before(function(){
 url = "http://localhost:8357?fixtures=true";
 beforeEach(function(){
   horseman = new Horseman();
-  horseman.open(url)
+  horseman.viewport(1000,1000);
+  horseman.open(url);
 })
+afterEach(function(){
+  horseman.close();
+});
 
 
