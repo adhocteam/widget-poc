@@ -6,9 +6,7 @@ var WidgetApp = WidgetApp || {};
   store.checkCoverage = function(planId, data){
     // Consider it covered if the planId and the entity id share any chars
     var promises = _.map(['doctors', 'drugs', 'facilities'], function(datatype){
-      return Q.fcall(function(){
-        return store.coverageForDataType(planId, datatype, data[datatype]);
-      });
+      return store.coverageForDataType(planId, datatype, data[datatype]);
     })
     return Q.all(promises).then(function(results){
       var output = _.reduce(results, function(memo, result){
@@ -79,7 +77,7 @@ var WidgetApp = WidgetApp || {};
       return _.find(entityList, function(elem){return elem.id == entity.id})
     }
     
-      
+    
   }
   
   store.getMyEntities = function(){
@@ -91,22 +89,102 @@ var WidgetApp = WidgetApp || {};
   }
 
   store.coverageForDataType = function(planID, datatype, data){
+    var idList = _.map(data, function(datum){return datum.id});
+    var cacheKey = ''+planID+'-'+datatype+'-'+_.compact(idList).join('-');
+    
+    if (store.coverageCache[cacheKey]){
+      return Q.fcall(function(){
+        return store.coverageCache[cacheKey];
+      });
+    } else {
+      return store.getCoverageForDataType(planID, datatype, data).then(function(result){
+        store.coverageCache[cacheKey] = result;
+        return result;
+      })
+    }
     return store.dummyCoverageCheck(planID, datatype, data);
   }
+
+  store.coverageCache = {};
   
-  store.dummyCoverageCheck = function(planID, datatype, data){
-    var planChars = planID.toString().split('');
-    var output = {}
-    output[datatype] = 
-      _.object(
-        _.map(data, function(entity){
-          var idChars = entity.id.toString().split('');
-          var found = !!(_.intersection(planChars, idChars).length)
-          return [entity.id, {covered: found, name: entity.name}]
-        })
-      );
-    
-    return output;
+  store.getCoverageForDataType = function(planID, datatype, data){
+    var lookupDeferred = Q.defer();
+    store.coverageQueues[datatype].push({planID: planID, data: data, deferred: lookupDeferred});
+    return lookupDeferred.promise;
+  }
+
+  var buildCoverageQueues = function(datatypes){
+    return _.object(
+      _.map(datatypes, function(datatype){
+        
+        var queue = []
+        var queueObj = {}
+
+        var batchSize = 20;
+        
+        queueObj.push = function(task){
+          queue.push(task)
+          this.scheduleDrain();
+        }
+        queueObj.scheduleDrain = function(){
+          window.setTimeout(this.drain.bind(this), 25);
+        }
+        
+        queueObj.drain = function(){
+          var batch = _.head(queue, batchSize);
+          queue = _.tail(queue, batchSize);
+          if (queue.length){
+            this.scheduleDrain();
+          }
+
+          
+          if (batch.length){
+            var output = store.dummyCoverageCheck(
+              _.pluck(batch, 'planID'),
+              datatype,
+              _.uniq(_.flatten(_.pluck(batch, 'data')))
+            );
+            _.each(output, function(data, planID){
+              _.each(batch, function(item){
+                if (item.planID == planID){
+                  item.deferred.resolve(data)
+                }
+              });
+            });
+          }
+
+          
+            
+        }
+        
+        return [datatype, queueObj];
+      })
+    );
+  }
+
+  store.coverageQueues = buildCoverageQueues(['doctors', 'drugs', 'facilities']);
+
+  
+  
+  store.dummyCoverageCheck = function(planIDs, datatype, data){
+    console.log(data);
+    return _.object(
+      _.map(planIDs, function(planID){
+        var planChars = planID.toString().split('');
+        var output = {}
+        output[datatype] = 
+          _.object(
+            _.map(data, function(entity){
+              var idChars = entity.id.toString().split('');
+              var found = !!(_.intersection(planChars, idChars).length)
+              return [entity.id, {covered: found, name: entity.name}]
+            })
+          );
+      
+        return [planID, output];
+        
+      })
+    );
   };
   
   store.stubData = {
