@@ -39,12 +39,13 @@ var WidgetApp = WidgetApp || {};
   }
   
   WidgetApp.emitFactsAboutId = function(id){
-    var data = this.store.rolledUpCoverageFor(id);
-    if (data){
-      data.planID = id;
-      var planData = {};
-      planData[id] = contentFor('plan-details', data)
-      dispatchToParent({planData: planData});
-    }
+    this.store.rolledUpCoverageFor(id).then(function(data){
+      if (data){
+        data.planID = id;
+        var planData = {};
+        planData[id] = contentFor('plan-details', data)
+        dispatchToParent({planData: planData});
+      }
+    });
   }
 })();

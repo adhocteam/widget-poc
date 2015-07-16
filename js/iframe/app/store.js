@@ -5,20 +5,24 @@ var WidgetApp = WidgetApp || {};
   
   store.checkCoverage = function(planId, data){
     // Consider it covered if the planId and the entity id share any chars
-    var planChars = planId.toString().split('');
-    return _.mapObject(data, function(list, type){
-      var array = 
-          _.map(list, function(entity){
-            var idChars = entity.id.toString().split('');
-            var found = !!(_.intersection(planChars, idChars).length)
-            return [entity.id, {covered: found, name: entity.name}]
-          })
-      return _.object(array);
+    return Q.fcall(function(){
+      var planChars = planId.toString().split('');
+      return _.mapObject(data, function(list, type){
+        var array = 
+            _.map(list, function(entity){
+              var idChars = entity.id.toString().split('');
+              var found = !!(_.intersection(planChars, idChars).length)
+              return [entity.id, {covered: found, name: entity.name}]
+            })
+        return _.object(array);
+      });
     });
   }
   
   store.rolledUpCoverageFor = function(id){
-    return this.rollUpCoverage(this.coverageFor(id));
+    return this.coverageFor(id).then(function(data){
+      return store.rollUpCoverage(data);
+    })
   }
 
   store.coverageFor = function(id){

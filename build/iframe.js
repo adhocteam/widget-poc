@@ -7137,13 +7137,14 @@ var WidgetApp = WidgetApp || {};
   }
   
   WidgetApp.emitFactsAboutId = function(id){
-    var data = this.store.rolledUpCoverageFor(id);
-    if (data){
-      data.planID = id;
-      var planData = {};
-      planData[id] = contentFor('plan-details', data)
-      dispatchToParent({planData: planData});
-    }
+    this.store.rolledUpCoverageFor(id).then(function(data){
+      if (data){
+        data.planID = id;
+        var planData = {};
+        planData[id] = contentFor('plan-details', data)
+        dispatchToParent({planData: planData});
+      }
+    });
   }
 })();
 
@@ -7237,20 +7238,24 @@ var WidgetApp = WidgetApp || {};
   
   store.checkCoverage = function(planId, data){
     // Consider it covered if the planId and the entity id share any chars
-    var planChars = planId.toString().split('');
-    return _.mapObject(data, function(list, type){
-      var array = 
-          _.map(list, function(entity){
-            var idChars = entity.id.toString().split('');
-            var found = !!(_.intersection(planChars, idChars).length)
-            return [entity.id, {covered: found, name: entity.name}]
-          })
-      return _.object(array);
+    return Q.fcall(function(){
+      var planChars = planId.toString().split('');
+      return _.mapObject(data, function(list, type){
+        var array = 
+            _.map(list, function(entity){
+              var idChars = entity.id.toString().split('');
+              var found = !!(_.intersection(planChars, idChars).length)
+              return [entity.id, {covered: found, name: entity.name}]
+            })
+        return _.object(array);
+      });
     });
   }
   
   store.rolledUpCoverageFor = function(id){
-    return this.rollUpCoverage(this.coverageFor(id));
+    return this.coverageFor(id).then(function(data){
+      return store.rollUpCoverage(data);
+    })
   }
 
   store.coverageFor = function(id){
@@ -7367,9 +7372,11 @@ var WidgetApp = WidgetApp || {};
 (function(){
   var controller = WidgetApp.controllers['plan-coverage'] = {};
   controller.init = function(tag, id){
-    var coverage = WidgetApp.store.coverageFor(id);
-    tag.coverage = coverage;
-    tag.rolledUp = WidgetApp.store.rollUpCoverage(coverage);
+    WidgetApp.store.coverageFor(id).then(function(coverage){
+      tag.coverage = coverage;
+      tag.rolledUp = WidgetApp.store.rollUpCoverage(coverage);
+      tag.update();
+    });
   }
 })();
 
