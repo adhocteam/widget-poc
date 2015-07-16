@@ -5,20 +5,19 @@ var WidgetApp = WidgetApp || {};
   
   store.checkCoverage = function(planId, data){
     // Consider it covered if the planId and the entity id share any chars
-    return Q.fcall(function(){
-      var planChars = planId.toString().split('');
-      return _.mapObject(data, function(list, type){
-        var array = 
-            _.map(list, function(entity){
-              var idChars = entity.id.toString().split('');
-              var found = !!(_.intersection(planChars, idChars).length)
-              return [entity.id, {covered: found, name: entity.name}]
-            })
-        return _.object(array);
+    var promises = _.map(['doctors', 'drugs', 'facilities'], function(datatype){
+      return Q.fcall(function(){
+        return store.coverageForDataType(planId, datatype, data[datatype]);
       });
-    });
+    })
+    return Q.all(promises).then(function(results){
+      var output = _.reduce(results, function(memo, result){
+        return _.extend(memo, result);
+      }, {})
+      return output;
+    })
   }
-  
+
   store.rolledUpCoverageFor = function(id){
     return this.coverageFor(id).then(function(data){
       return store.rollUpCoverage(data);
@@ -91,6 +90,25 @@ var WidgetApp = WidgetApp || {};
     }
   }
 
+  store.coverageForDataType = function(planID, datatype, data){
+    return store.dummyCoverageCheck(planID, datatype, data);
+  }
+  
+  store.dummyCoverageCheck = function(planID, datatype, data){
+    var planChars = planID.toString().split('');
+    var output = {}
+    output[datatype] = 
+      _.object(
+        _.map(data, function(entity){
+          var idChars = entity.id.toString().split('');
+          var found = !!(_.intersection(planChars, idChars).length)
+          return [entity.id, {covered: found, name: entity.name}]
+        })
+      );
+    
+    return output;
+  };
+  
   store.stubData = {
     doctors: [
       {id: 1, name: "Ephraim Ferry", specialty: 'Internal Medicine'},
