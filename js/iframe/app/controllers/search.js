@@ -8,7 +8,7 @@
       facilities: []
     };
     tag.search = function(e){
-      store.search(this.query.value).then(function(results){
+      store.entities.search(this.query.value).then(function(results){
         tag.results = results;
         tag.update();
       });

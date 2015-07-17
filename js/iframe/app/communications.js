@@ -18,7 +18,7 @@ var WidgetApp = WidgetApp || {};
   }
   
   WidgetApp.emitOverlay = function(){
-    var data = extractCounts(this.store.getMyEntities())
+    var data = extractCounts(this.store.entities.get())
     dispatchToParent({overlayContent: contentFor('plan-overlay', data)});
   }
 

@@ -16,7 +16,7 @@ describe('opening a modal', function(){
     horseman.waitForSelector('.modal-visible')
       .switchToChildFrame(0)
     expect(horseman.text('h3')).to.include('Plan ID: 123456')
-    
+    expect(horseman.count('coverage-set li')).to.equal(13)
     done();
   });
 
