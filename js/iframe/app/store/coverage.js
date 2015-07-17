@@ -74,12 +74,10 @@ var WidgetApp = WidgetApp || {};
         
         queueObj.push = function(task){
           queue.push(task)
-          this.scheduleDrain();
-        }
+          if (!this.scheduledDrain) this.scheduleDrain();
+        }                           
         queueObj.scheduleDrain = function(){
-          if (!this.scheduledDrain){
-            this.scheduledDrain = window.setTimeout(this.drain.bind(this), 25);
-          }
+          this.scheduledDrain = window.setTimeout(this.drain.bind(this), 25);
         }
         
         queueObj.drain = function(){
@@ -89,7 +87,6 @@ var WidgetApp = WidgetApp || {};
           if (queue.length){
             this.scheduleDrain();
           }
-
           
           if (batch.length){
             var output = coverage.dummyCheck(
@@ -99,9 +96,7 @@ var WidgetApp = WidgetApp || {};
             );
             _.each(output, function(data, planID){
               _.each(batch, function(item){
-                if (item.planID == planID){
-                  item.deferred.resolve(data)
-                }
+                if (item.planID == planID) item.deferred.resolve(data);
               });
             });
           }
