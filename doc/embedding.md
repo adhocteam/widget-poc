@@ -11,3 +11,10 @@
    ```
    <script type="text/javascript" src="TBD.js"></script>
    ```
+
+3. If the plans change after initial page load, post a window message:
+
+    ```
+    window.postMessage(JSON.stringify({dataChanged: true}), '*');
+    ```
+This is a pub-sub style notification so it's safe to call at any time.
