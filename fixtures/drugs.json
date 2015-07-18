@@ -1,0 +1,9 @@
+{
+  "drugs": [
+    {"rxcui": "45", "name": "benadryl"},
+    {"rxcui": "66", "name": "aspirin"},
+    {"rxcui": "89", "name": "ranitidine"},
+    {"rxcui": "82", "name": "fluticasone"},
+    {"rxcui": "47", "name": "acetaminophen"}
+  ]
+}

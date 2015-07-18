@@ -1,0 +1,159 @@
+{
+    "providers": [
+        {
+            "provider": {
+                "npi": 1,
+                "name": "Ephraim Ferry",
+                "specialty": "Internal Medicine",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 2,
+                "name": "Fanny Zemlak I",
+                "specialty": "Orthopedics",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 3,
+                "name": "Braxton Wuckert",
+                "specialty": "Gastroenterology",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 4,
+                "name": "Johathan Hyatt DDS",
+                "specialty": "Dentistry",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 5,
+                "name": "Devon Kerluke",
+                "specialty": "Family Medicine",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 6,
+                "name": "Evie Macejkovic",
+                "specialty": "Family Medicine",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 7,
+                "name": "Rossie Jacobi",
+                "specialty": "Internal Medicine",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 8,
+                "name": "Elenora Jakubowski",
+                "specialty": "Podiatry",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 9,
+                "name": "Macey Yost",
+                "specialty": "Dermatology",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 10,
+                "name": "Efren McClure",
+                "specialty": "Opthalmology",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 11,
+                "name": "Althea Bashirian",
+                "specialty": "Pediatric Medicine",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 12,
+                "name": "Laurie Wiza",
+                "specialty": "Orthopedic Surgery",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 13,
+                "name": "Ola Jerde",
+                "specialty": "Cardiology",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 14,
+                "name": "Leann Bauch",
+                "specialty": "Neurology",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "npi": 15,
+                "name": "Maggie Medhurst",
+                "specialty": "Family Medicine",
+                "provider_type": "Individual"
+            }
+        },
+        {
+            "provider": {
+                "provider_type": "facility",
+                "npi": 345,
+                "name": "Massachusetts General Hospital"
+            }
+        },
+        {
+            "provider": {
+                "provider_type": "facility",
+                "npi": 1124,
+                "name": "Rhode Island Hospital"
+            }
+        },
+        {
+            "provider": {
+                "provider_type": "facility",
+                "npi": 7712,
+                "name": "Rhode Island Medical Imaging"
+            }
+        },
+        {
+            "provider": {
+                "provider_type": "facility",
+                "npi": 1124,
+                "name": "Sturdy Memorial Hospital"
+            }
+        },
+        {
+            "provider": {
+                "provider_type": "facility",
+                "npi": 9752,
+                "name": "Cedars Sinai Hospital "
+            }
+        }
+    ]
+}
