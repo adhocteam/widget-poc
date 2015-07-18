@@ -73,10 +73,16 @@ describe('opening a modal', function(){
     })
 
     describe('Searching for stuff', function(){
+      beforeEach(function(){
+        horseman.page.onConsoleMessage = function(msg, lineNum, sourceId) {
+          console.log('CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+        };
+        horseman.injectJs('fixtures/inject.js');
+      });
       it('should search and find a drug', function(done){
         horseman.click(".nav a")
           .type('input[name="query"]', 'flutic')
-          .click("button").waitForSelector('search-panel')
+          .click("button").waitForSelector('search-panel').screenshot('screen.png')
         expect(horseman.count('.drugs li')).to.equal(1)
         done();
       });

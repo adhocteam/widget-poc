@@ -5,6 +5,9 @@ var WidgetApp = WidgetApp || {};
 
   var entities = store.entities = {};
 
+  entities.providerUrl = 'http://marketplace.adhocteam.us/api/v1/providers/search';
+  entities.drugUrl = 'http://marketplace.adhocteam.us/api/v1/drugs/search';
+  
   var hasMatch = function(matchable, token){
     return matchable.indexOf(token) > -1;
   }
@@ -20,27 +23,75 @@ var WidgetApp = WidgetApp || {};
       return funcToCall(val)
     });
   }
-  
-  entities.search = function(query){
-    return Q.fcall(function(){
-      if (!query) return false;
-      var tokens = _.compact(query.toLowerCase().split(/\W/));
-      return _.mapObject(stubData, function(list, key){
-        return _.filter(list, function(entity){
-          var matchables = _.map(_.compact([entity.name, entity.specialty]), function(m){
-            return m.toLowerCase();
-          });
-          var tokenMatches = function(token){
-            return orStream(
-              matchables, _.partial(hasMatch, _, token)
-            )
-          }
-          return !added(entity, key) && andStream(tokens, tokenMatches)
-        })
-      })
+
+  var searchProviders = function(query, zip){
+    var d = Q.defer();
+    reqwest({
+      url: entities.providerUrl,
+      method: 'get',
+      crossOrigin: true,
+      type: 'json',
+      data: [
+        {
+          name: 'q',
+          value: query
+        },
+        {
+          name: 'zipcode',
+          value: zip
+        }
+      ]
+    }).then(d.resolve,d.reject);
+    return d.promise.then(function(resp){
+      var transformed = _.map(
+        resp.providers,
+        function(provider){
+          return _.extend(provider.provider, {
+            id: provider.provider.npi,
+            group_key: (provider.provider.provider_type == 'Individual' ? 'doctors' : 'facilities')
+          })
+        }
+      );
+      return _.groupBy(transformed, function(provider){
+        return provider.group_key;
+      });
     });
   }
 
+  var searchDrugs = function(query){
+    var d = Q.defer();
+    reqwest({
+      url: entities.drugUrl,
+      method: 'get',
+      crossOrigin: true,
+      type: 'json',
+      data: [
+        {
+          name: 'q',
+          value: query
+        }
+      ]
+    }).then(d.resolve, d.reject);
+    return d.promise.then(function(resp){
+      return {drugs: _.map(resp.drugs, function(drug){
+        return {id: drug.rxcui, name: drug.name}
+      })};
+    })
+  }
+
+  
+  entities.search = function(query){
+    return Q.all([
+      searchProviders(query, store.zip),
+      searchDrugs(query)
+    ]).then(function(results){
+      var output = _.reduce(results, function(memo, result){
+        return _.extend(memo, result);
+      }, {})
+      return output;
+    });
+  }
+  
   entities.get = function(){
     return {
       doctors: store.doctorCollection.data,
@@ -54,40 +105,6 @@ var WidgetApp = WidgetApp || {};
       var entityList = entities.get()[key]
       return _.find(entityList, function(elem){return elem.id == entity.id})
     }
-  }
-  
-  var stubData = {
-    doctors: [
-      {id: 1, name: "Ephraim Ferry", specialty: 'Internal Medicine'},
-      {id: 2, name: "Fanny Zemlak I", specialty: 'Orthopedics'},
-      {id: 3, name: "Braxton Wuckert", specialty: 'Gastroenterology'},
-      {id: 4, name: "Johathan Hyatt DDS", specialty: 'Dentistry'},
-      {id: 5, name: "Devon Kerluke", specialty: 'Family Medicine'},
-      {id: 6, name: "Evie Macejkovic", specialty: 'Family Medicine'},
-      {id: 7, name: "Rossie Jacobi", specialty: 'Internal Medicine'},
-      {id: 8, name: "Elenora Jakubowski", specialty: 'Podiatry'},
-      {id: 9, name: "Macey Yost", specialty: 'Dermatology'},
-      {id: 10, name: "Efren McClure", specialty: 'Opthalmology'},
-      {id: 11, name: "Althea Bashirian", specialty: 'Pediatric Medicine'},
-      {id: 12, name: "Laurie Wiza", specialty: 'Orthopedic Surgery'},
-      {id: 13, name: "Ola Jerde", specialty: 'Cardiology'},
-      {id: 14, name: "Leann Bauch", specialty: 'Neurology'},
-      {id: 15, name: "Maggie Medhurst", specialty: 'Family Medicine'}
-    ],
-    drugs: [
-      {id: 45, name: 'benadryl'},
-      {id: 66, name: 'aspirin'},
-      {id: 89, name: 'ranitidine'},
-      {id: 82, name: 'fluticasone'},
-      {id: 47, name: 'acetaminophen'}
-    ],
-    facilities: [
-      {id: 345, name: 'Massachusetts General Hospital'},
-      {id: 1124, name: 'Rhode Island Hospital'},
-      {id: 7712, name: 'Rhode Island Medical Imaging'},
-      {id: 1124, name: 'Sturdy Memorial Hospital'},
-      {id: 9752, name: 'Cedars Sinai Hospital '}
-    ]
   }
   
 })();
