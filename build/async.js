@@ -66,7 +66,8 @@ window.PlanCompareWidget.init = function(){
     var blocks = body.querySelectorAll('['+planIdAttr+']');
     forEach.call(blocks, function(block){
       sendFunc({
-        planID: block.getAttribute(planIdAttr)
+        planID: block.getAttribute(planIdAttr),
+        zip: block.getAttribute('data-zip-code')
       });
     });
   }
