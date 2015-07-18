@@ -2,7 +2,6 @@ var WidgetApp = WidgetApp || {};
 (function(){
   WidgetApp.store = WidgetApp.store || {};
   var store = WidgetApp.store;
-  
   store.rolledUpCoverageFor = function(id){
     return this.coverageFor(id).then(function(data){
       return store.rollUpCoverage(data);
@@ -20,6 +19,10 @@ var WidgetApp = WidgetApp || {};
       var uncoveredCount = (grouped['false'] || []).length;
       return {covered: coveredCount, uncovered: uncoveredCount, total: coveredCount+uncoveredCount};
     });
+  }
+
+  store.setZip = function(zip){
+    this.zip = zip;
   }
   
 })();
