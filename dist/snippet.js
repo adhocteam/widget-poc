@@ -1,1 +1,21 @@
-!function(){var e=document.createElement("link");e.rel="stylesheet",e.type="text/css",e.href="dist/widget.css";var t=document.createElement("script");t.src="dist/async.js",t.type="text/javascript",t.async="true";var a=!1;t.onload=t.onreadystatechange=function(){var e=this.readyState;if(!(a||e&&"complete"!=e&&"loaded"!=e))try{a=!0,PlanCompareWidget.init()}catch(t){}};var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(e,r),r.parentNode.insertBefore(t,r)}();
+(
+  function(){
+    var inject = document.createElement('script');
+    inject.src = 'dist/async.js'
+    inject.type = 'text/javascript';
+    inject.async = 'true';
+    inject.id = 'planCompareWidgetScript';
+    // Shout out to IE9 for firing _both_ events
+    var callbackFired = false;
+    inject.onload = inject.onreadystatechange = function(){
+      var rs = this.readyState;
+      if (callbackFired || rs && rs != 'complete' && rs != 'loaded') return;
+      try {
+        callbackFired = true;
+        PlanCompareWidget.init();
+      } catch(e) {}
+    };
+    var first = document.getElementsByTagName('script')[0];
+    first.parentNode.insertBefore(inject, first);
+  }
+)();

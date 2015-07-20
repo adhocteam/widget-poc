@@ -44,15 +44,38 @@ var extractPayload= function(event){
 if (!window.PlanCompareWidget) window.PlanCompareWidget = {};
 
 window.PlanCompareWidget.init = function(){
+  var scriptBase, iFrame;
   var body = document.body;
   var forEach = Array.prototype.forEach;
   var planIdAttr = 'data-plan-id';
-  var iFrame = document.createElement('iframe');
-  iFrame.src = 'dist/iframe.html#list';
-  iFrame.setAttribute('aria-live', 'polite');
-
-  var modalMarkup = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
   
+  var getScriptBase = function(){
+    if (scriptBase) return scriptBase;
+    var scriptLoc = document.getElementById('planCompareWidgetScript').src;
+    return scriptBase = scriptLoc.slice(0,scriptLoc.lastIndexOf('/') + 1);;
+  };
+
+  var injectStyles = function(){
+    var styles = document.createElement('link');
+    styles.rel = 'stylesheet';
+    styles.type = 'text/css';
+    styles.href = getScriptBase()+'widget.css';
+    var first = document.getElementsByTagName('script')[0];
+    first.parentNode.insertBefore(styles, first);
+  }
+
+  var generateIframeElement = function(){
+    var iFrameElem = document.createElement('iframe');
+    iFrameElem.src = getScriptBase()+'iframe.html#list';
+    iFrameElem.setAttribute('aria-live', 'polite');
+    return iFrameElem;
+  }
+
+  var getIframe = function() {
+    if (iFrame) return iFrame;
+    return iFrame = generateIframeElement();
+  };
+    
   var buildClickHandler = function(attribute, modal) {
     return function(event){
       var target = event.target;
@@ -86,10 +109,9 @@ window.PlanCompareWidget.init = function(){
   var addOverlay = function(content){
     var overlay = document.getElementsByClassName('widgetOverlay')[0];
     if (!overlay){
-      var box = document.createElement('div');
-      box.className = 'widgetOverlay';
-      body.appendChild(box);
-      overlay = box;
+      overlay = document.createElement('div');
+      overlay.className = 'widgetOverlay';
+      body.appendChild(overlay);
     }
     overlay.innerHTML = content;
   }
@@ -141,8 +163,8 @@ window.PlanCompareWidget.init = function(){
     modalWrapper.className = 'modal';
     modalWrapper.setAttribute('role','dialog');
     modalWrapper.setAttribute('aria-labelledby', 'iFrame');
-    modalWrapper.innerHTML = modalMarkup;
-    modalWrapper.querySelector('.modal-content').appendChild(iFrame);
+    modalWrapper.innerHTML = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
+    modalWrapper.querySelector('.modal-content').appendChild(getIframe());
     return modalWrapper;
   };
 
@@ -168,7 +190,7 @@ window.PlanCompareWidget.init = function(){
       },
       open: function(clickTarget){
         this.lastFocus = clickTarget;
-        iFrame.contentWindow.focus();
+        getIframe().contentWindow.focus();
         var params = {
           planID: clickTarget.getAttribute(planIdAttr),
           section: clickTarget.getAttribute('data-section')
@@ -188,9 +210,8 @@ window.PlanCompareWidget.init = function(){
     return modal;
   };
 
- 
-
   var init = function(){
+    injectStyles();
     var modal = buildModal();
     body.appendChild(modal.container);
     body.addEventListener('click', buildClickHandler('data-modal', modal));
