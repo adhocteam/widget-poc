@@ -41,7 +41,7 @@ var WidgetApp = WidgetApp || {};
             var entity = _.extend(provider.provider, {
               id: provider.provider.npi,
               group_key: (provider.provider.provider_type == 'Individual' ? 'doctors' : 'facilities')
-            })
+            });
             if (!added(entity, entity.group_key)){
               return entity;
             }
@@ -83,7 +83,7 @@ var WidgetApp = WidgetApp || {};
     ]).then(function(results){
       var output = _.reduce(results, function(memo, result){
         return _.extend(memo, result);
-      }, {})
+      }, {});
       return output;
     });
   }

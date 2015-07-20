@@ -24,7 +24,7 @@ describe('opening a modal', function(){
     horseman.waitForSelector('.overlayDetails')
     var text = horseman.evaluate(function(){
       return $('.overlayDetails li')[0].innerText;
-    })
+    });
     expect(text).to.include('Doctors: 6');
     done();
   });

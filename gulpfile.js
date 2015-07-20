@@ -7,14 +7,14 @@ var gulp = require('gulp'),
     mocha = require('gulp-spawn-mocha'),
     plumber = require('gulp-plumber');
 
-gulp.task('default', ['watch', 'iframe', 'snippet', 'async', 'sass-iframe', 'sass-widget', 'mocha-run']);
+gulp.task('default', ['watch', 'iframe', 'html-copy', 'snippet', 'async', 'sass-iframe', 'sass-widget', 'mocha-run']);
 
 gulp.task('async', function() {
   return gulp.src(['./js/polyfills/*.js', './js/common/*.js', './js/async/*.js'])
     .pipe(print())
     //.pipe(uglify())
     .pipe(concat('async.js'))
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('snippet', function() {
@@ -22,7 +22,7 @@ gulp.task('snippet', function() {
     .pipe(print())
     .pipe(uglify())
     .pipe(concat('snippet.js'))
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('iframe', ['riot'], function(){
@@ -30,7 +30,7 @@ gulp.task('iframe', ['riot'], function(){
     .pipe(print())
     //.pipe(uglify())
     .pipe(concat('iframe.js'))
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('riot', function(){
@@ -43,14 +43,20 @@ gulp.task('sass-iframe', function () {
   return gulp.src('./styles/iframe/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(concat('iframe.css'))
-    .pipe(gulp.dest('./css'));
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('sass-widget', function () {
   return gulp.src('./styles/widget/*.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(concat('widget.css'))
-    .pipe(gulp.dest('./css'));
+    .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('html-copy', function(){
+  return gulp.src('./html/embed.html')
+    .pipe(concat('iframe.html'))
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('mocha-run', function() {
@@ -65,6 +71,7 @@ gulp.task('mocha-run', function() {
 gulp.task('watch',['mocha-run'], function () {
   gulp.watch(['./templates/**/*.tag'],['riot'])
   gulp.watch(['js/*', 'gulpfile.js'], ['default']);
+  gulp.watch(['html/*'], ['html-copy']);
   gulp.watch(['js/iframe/**/*', 'js/polyfills/*.js'], ['iframe']);
   gulp.watch(['js/snippet/*'], ['snippet']);
   gulp.watch(['js/async/*', 'js/polyfills/*.js'], ['async']);

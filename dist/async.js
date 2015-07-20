@@ -48,7 +48,7 @@ window.PlanCompareWidget.init = function(){
   var forEach = Array.prototype.forEach;
   var planIdAttr = 'data-plan-id';
   var iFrame = document.createElement('iframe');
-  iFrame.src = 'embed.html#list';
+  iFrame.src = 'dist/iframe.html#list';
   iFrame.setAttribute('aria-live', 'polite');
 
   var modalMarkup = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
