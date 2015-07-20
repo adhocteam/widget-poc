@@ -7716,7 +7716,6 @@ riot.mountTo = riot.mount
   return URI;
 }));
 
-
 var WidgetApp = WidgetApp || {};
 
 document.addEventListener("DOMContentLoaded", function(event) { 

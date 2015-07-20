@@ -167,13 +167,11 @@ window.PlanCompareWidget.init = function(){
     return modal;
   };
 
-  var init = function(){
+  (function(){
     injectStyles();
     var modal = buildModal();
     body.appendChild(modal.container);
     body.addEventListener('click', buildClickHandler('data-modal', modal));
     window.addEventListener("message", buildMessageHandler(modal), false);
-  };
-
-  init();
+  })();
 };
