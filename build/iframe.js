@@ -8162,13 +8162,13 @@ var WidgetApp = WidgetApp || {};
 
   var andStream = function(stream, funcToCall){
     return !_.find(stream, function(val){
-      return !funcToCall(val)
+      return !funcToCall(val);
     });
   }
 
   var orStream = function(stream, funcToCall){
     return _.find(stream, function(val){
-      return funcToCall(val)
+      return funcToCall(val);
     });
   }
 
@@ -8179,26 +8179,22 @@ var WidgetApp = WidgetApp || {};
       method: 'get',
       crossOrigin: true,
       type: 'json',
-      data: [
-        {
-          name: 'q',
-          value: query
-        },
-        {
-          name: 'zipcode',
-          value: zip
-        }
-      ]
+      data: {q: query, zipcode: zip}
     }).then(d.resolve,d.reject);
     return d.promise.then(function(resp){
-      var transformed = _.map(
-        resp.providers,
-        function(provider){
-          return _.extend(provider.provider, {
-            id: provider.provider.npi,
-            group_key: (provider.provider.provider_type == 'Individual' ? 'doctors' : 'facilities')
-          })
-        }
+      var transformed = _.compact(
+        _.map(
+          resp.providers,
+          function(provider){
+            var entity = _.extend(provider.provider, {
+              id: provider.provider.npi,
+              group_key: (provider.provider.provider_type == 'Individual' ? 'doctors' : 'facilities')
+            })
+            if (!added(entity, entity.group_key)){
+              return entity;
+            }
+          }
+        )
       );
       return _.groupBy(transformed, function(provider){
         return provider.group_key;
@@ -8213,17 +8209,17 @@ var WidgetApp = WidgetApp || {};
       method: 'get',
       crossOrigin: true,
       type: 'json',
-      data: [
-        {
-          name: 'q',
-          value: query
-        }
-      ]
+      data: {q: query}
     }).then(d.resolve, d.reject);
     return d.promise.then(function(resp){
-      return {drugs: _.map(resp.drugs, function(drug){
-        return {id: drug.rxcui, name: drug.name}
-      })};
+      return {drugs: _.compact(
+        _.map(resp.drugs, function(drug){
+          var payload = {id: drug.rxcui, name: drug.name};
+          if (!added(payload, 'drugs')){
+            return payload;
+          }
+        })
+      )};
     })
   }
 
