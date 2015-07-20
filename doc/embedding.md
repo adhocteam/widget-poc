@@ -6,13 +6,15 @@
    <div data-plan-id="<plan-id>" data-zip-code="<zip-code>"></div>
    ```
 
-2. Include the javascript (url TBD):
+2. Update `snippet.js`, line 4 to point to the location of async.js
+
+3. Include the javascript:
 
    ```
-   <script type="text/javascript" src="TBD.js"></script>
+   <script type="text/javascript" src="snippet.js"></script>
    ```
 
-3. If the plans change after initial page load, post a window message:
+4. If the plans change after initial page load, post a window message:
 
     ```
     window.postMessage(JSON.stringify({dataChanged: true}), '*');
