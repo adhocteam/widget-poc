@@ -81,7 +81,8 @@ var releaseRoot = function(){
 }
 
 gulp.task('copy-release', ['build', 'release-files'], function(){
-  return gulp.src(distDir()+'/*')
+  return gulp.src(distDir()+'/**/*')
+    .pipe(print())
     .pipe(gulp.dest('./releases/'+releaseRoot()));
 });
 
