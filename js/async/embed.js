@@ -117,7 +117,7 @@ window.PlanCompareWidget.init = function(){
 
   var buildModalContent = function(){
     var modalWrapper = document.createElement('div');
-    modalWrapper.className = 'modal';
+    modalWrapper.className = 'coverage-modal';
     modalWrapper.setAttribute('role','dialog');
     modalWrapper.setAttribute('aria-labelledby', 'iFrame');
     modalWrapper.innerHTML = '<div class="modal-inner"><a href="javascript:" rel="modal:close" aria-label="Close" class="close">&times;</a><div class="modal-content"></div></div>';
@@ -127,7 +127,7 @@ window.PlanCompareWidget.init = function(){
 
   var buildModalMarkup = function(modal){
     modal.container = document.createElement('div');
-    modal.container.className = 'modal-container';
+    modal.container.className = 'coverage-modal-container';
     modal.wrapper = buildModalContent();
     modal.container.appendChild(modal.wrapper);
   }
@@ -139,7 +139,7 @@ window.PlanCompareWidget.init = function(){
         this.dispatchFunc = dispatchFunc;
       },
       close: function(){
-        this.container.className = 'modal-container';
+        this.container.className = 'coverage-modal-container';
         if (this.lastFocus){
           this.lastFocus.focus();
           this.lastFocus = null;
@@ -152,7 +152,7 @@ window.PlanCompareWidget.init = function(){
           planID: clickTarget.getAttribute(planIdAttr),
           section: clickTarget.getAttribute('data-section')
         };
-        this.container.className = 'modal-container modal-visible';
+        this.container.className = 'coverage-modal-container modal-visible';
         this.send({routeTo: params});
       },
       send: function(payload){

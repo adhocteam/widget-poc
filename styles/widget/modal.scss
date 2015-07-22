@@ -1,7 +1,7 @@
 // The following directives only apply once the script has loaded.
-.modal-container {
+.coverage-modal-container {
   
-  .modal {
+  .coverage-modal {
     display: block;
     position: fixed;
     content: "";
@@ -71,7 +71,7 @@
   }
   
   &.modal-visible {
-    .modal {
+    .coverage-modal {
       box-sizing: border-box;
       z-index: 99;
       font-size: 1em;
