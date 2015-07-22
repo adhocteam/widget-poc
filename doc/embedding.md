@@ -20,3 +20,7 @@
     window.postMessage(JSON.stringify({dataChanged: true}), '*');
     ```
 This is a pub-sub style notification so it's safe to call at any time.
+
+## Notes
+
+Provider/Drug search are wired up to the AdHoc Dev Marketplace API. Coverage is stubbed (Something is considered covered if its id has a common digit with the plan id)
