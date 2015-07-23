@@ -7807,6 +7807,7 @@ var WidgetApp = WidgetApp || {};
       if (event){
         var payload = extractPayload(event);
         if (payload.planID){
+          console.log('iFrame notified about plan: ', payload.planID);
           handlePlanPayload(payload);
         } else if (payload.routeTo){
           WidgetApp.routes.handleRouteTo(payload.routeTo);

@@ -1,6 +1,6 @@
 {
   "name": "plan_compare_coverage_widget",
-  "version": "0.1.2",
+  "version": "0.1.2.debug",
   "description": "",
   "main": "embed.js",
   "dependencies": {

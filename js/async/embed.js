@@ -1,3 +1,46 @@
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function(oThis) {
+    if (typeof this !== 'function') {
+      // closest thing possible to the ECMAScript 5
+      // internal IsCallable function
+      throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+    }
+
+    var aArgs   = Array.prototype.slice.call(arguments, 1),
+        fToBind = this,
+        fNOP    = function() {},
+        fBound  = function() {
+          return fToBind.apply(this instanceof fNOP
+                               ? this
+                               : oThis,
+                               aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+
+    return fBound;
+  };
+}
+
+// IE polyfill
+var wl = window.location;
+if (!wl.origin) {
+  wl.origin = wl.protocol + "//" + wl.hostname + (wl.port ? ':' + wl.port: '');
+}
+
+var extractPayload= function(event){
+    // Only accept same-origin messages for now
+  if (event.origin != window.location.origin) return {};
+  try {
+    var payload = JSON.parse(event.data);
+    return payload;
+  } catch(err) {
+    return {};
+  }
+    
+}
+
 if (!window.PlanCompareWidget) window.PlanCompareWidget = {};
 
 window.PlanCompareWidget.init = function(){
@@ -43,7 +86,9 @@ window.PlanCompareWidget.init = function(){
   };
 
   var notifyPlans = function(sendFunc){
-    var blocks = body.querySelectorAll('['+planIdAttr+']');
+    var blocks = body.querySelectorAll('['+planIdAttr+'][data-zip-code]');
+    console.log('Plan blocks found:');
+    console.dir(blocks)
     forEach.call(blocks, function(block){
       sendFunc({
         planID: block.getAttribute(planIdAttr),
@@ -55,6 +100,8 @@ window.PlanCompareWidget.init = function(){
   var updatePlans = function(data){
     for (var planID in data){
       var block = body.querySelector('['+planIdAttr+'="'+planID+'"]');
+      console.log('Updating plan block:');
+      console.dir(block);
       if (block){
         block.innerHTML = data[planID];
       }
@@ -76,7 +123,6 @@ window.PlanCompareWidget.init = function(){
   var buildMessageHandler = function(modal){
     return function(event){
       var payload = extractPayload(event);
-      
       if (payload.init){
         var replyWith = function(payload){
           event.source.postMessage(JSON.stringify(payload), window.location.origin);
@@ -84,8 +130,10 @@ window.PlanCompareWidget.init = function(){
         notifyPlans(replyWith);
         modal.openChannel(replyWith);
       } else if (payload.dataChanged){
+        console.log('Notify the iFrame of plans');
         notifyPlans(modal.dispatchFunc)
       } else if (payload.planData){
+        console.log('Plan data received');
         updatePlans(payload.planData);
       } else if (payload.overlayContent){
         addOverlay(payload.overlayContent);

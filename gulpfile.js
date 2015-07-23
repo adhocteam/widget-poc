@@ -87,7 +87,7 @@ gulp.task('copy-release', ['build', 'release-files'], function(){
 });
 
 gulp.task('production-settings', function(){
-  process.env.shouldUglify = true;
+  //process.env.shouldUglify = true;
   process.env.distDir = './releases/dist/';
 });
 
