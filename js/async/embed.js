@@ -99,7 +99,7 @@ window.PlanCompareWidget.init = function(){
 
   var updatePlans = function(data){
     for (var planID in data){
-      var block = body.querySelector('['+planIdAttr+'="'+planID+'"]');
+      var block = body.querySelector('div['+planIdAttr+'="'+planID+'"][data-zip-code');
       console.log('Updating plan block:');
       console.dir(block);
       if (block){
