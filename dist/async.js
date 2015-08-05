@@ -130,24 +130,29 @@ window.PlanCompareWidget.init = function(){
 
   var notifyPlans = function(sendFunc){
     var blocks = body.querySelectorAll('['+planIdAttr+'][data-zip-code]');
-    console.log('Plan blocks found:');
-    console.dir(blocks)
-    forEach.call(blocks, function(block){
-      sendFunc({
-        planID: block.getAttribute(planIdAttr),
-        zip: block.getAttribute('data-zip-code')
+    if (blocks.length){
+      console.log('Plan blocks found:');
+      console.dir(blocks)
+      forEach.call(blocks, function(block){
+        sendFunc({
+          planID: block.getAttribute(planIdAttr),
+          zip: block.getAttribute('data-zip-code')
+        });
       });
-    });
+    } else {
+      console.log('No plan blocks found');
+      sendFunc({noPlans: true});
+    }
   }
 
   var updatePlans = function(data){
     for (var planID in data){
-      var block = body.querySelector('['+planIdAttr+'="'+planID+'"]');
-      console.log('Updating plan block:');
-      console.dir(block);
-      if (block){
+      var blocks = body.querySelectorAll('div['+planIdAttr+'="'+planID+'"][data-zip-code]');
+      forEach.call(blocks, function(block){
+        console.log('Updating plan block:');
+        console.dir(block);
         block.innerHTML = data[planID];
-      }
+      });
     }
   }
 

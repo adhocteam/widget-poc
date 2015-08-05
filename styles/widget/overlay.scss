@@ -1,6 +1,8 @@
 .widgetOverlay {
-  position: fixed;
-  border: 1px solid red;
-  right: 0px;
-  top: 200px;
+  .overlayContainer {
+    position: fixed;
+    border: 1px solid red;
+    right: 0px;
+    top: 200px;
+  }
 }

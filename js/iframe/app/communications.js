@@ -18,10 +18,14 @@ var WidgetApp = WidgetApp || {};
   }
   
   WidgetApp.emitOverlay = function(){
-    var data = extractCounts(this.store.entities.get())
+    var data = extractCounts(WidgetApp.store.entities.get())
     dispatchToParent({overlayContent: contentFor('plan-overlay', data)});
   }
 
+  WidgetApp.emitNullOverlay = function(){
+    dispatchToParent({overlayContent: ' '});
+  }
+  
   WidgetApp.emitDataChanged = function(){
     dispatchToParent({dataChanged: true});
   }
@@ -37,8 +41,11 @@ var WidgetApp = WidgetApp || {};
     node.unmount();
     return content;
   }
+
+  var queuedOverlay = _.debounce(WidgetApp.emitOverlay, 25);
   
   WidgetApp.emitFactsAboutId = function(id){
+    queuedOverlay();
     this.store.rolledUpCoverageFor(id).then(function(data){
       if (data){
         data.planID = id;

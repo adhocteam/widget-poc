@@ -7721,7 +7721,6 @@ var WidgetApp = WidgetApp || {};
 document.addEventListener("DOMContentLoaded", function(event) { 
   WidgetApp.routes.bind();
   WidgetApp.bindListeners();
-  WidgetApp.emitOverlay();
   WidgetApp.emitInit();
 })
 
@@ -7745,10 +7744,14 @@ var WidgetApp = WidgetApp || {};
   }
   
   WidgetApp.emitOverlay = function(){
-    var data = extractCounts(this.store.entities.get())
+    var data = extractCounts(WidgetApp.store.entities.get())
     dispatchToParent({overlayContent: contentFor('plan-overlay', data)});
   }
 
+  WidgetApp.emitNullOverlay = function(){
+    dispatchToParent({overlayContent: ' '});
+  }
+  
   WidgetApp.emitDataChanged = function(){
     dispatchToParent({dataChanged: true});
   }
@@ -7764,8 +7767,11 @@ var WidgetApp = WidgetApp || {};
     node.unmount();
     return content;
   }
+
+  var queuedOverlay = _.debounce(WidgetApp.emitOverlay, 25);
   
   WidgetApp.emitFactsAboutId = function(id){
+    queuedOverlay();
     this.store.rolledUpCoverageFor(id).then(function(data){
       if (data){
         data.planID = id;
@@ -7811,6 +7817,9 @@ var WidgetApp = WidgetApp || {};
           handlePlanPayload(payload);
         } else if (payload.routeTo){
           WidgetApp.routes.handleRouteTo(payload.routeTo);
+        } else if (payload.noPlans){
+          console.log("Emit null overlay");
+          WidgetApp.emitNullOverlay()
         }
       }
     }, false);
@@ -8278,7 +8287,7 @@ riot.tag('list', '<doctors-page></doctors-page><scrips-page></scrips-page><facil
   
 });
 
-riot.tag('plan-overlay', '<div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.drugs}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true class="overlay all" data-section="list">View All / Edit</a></div>', function(opts) {
+riot.tag('plan-overlay', '<div class="overlayContainer"><div class="overlayDetails"><ul><overlay-line count="{opts.doctors}" section="doctors" label="Doctors"></overlay-line><overlay-line count="{opts.drugs}" section="scrips" label="Prescriptions"></overlay-line><overlay-line count="{opts.facilities}" section="facilities" label="Facilities"></overlay-line></ul><a href="javascript:;" data-modal=true class="overlay all" data-section="list">View All / Edit</a></div></div>', function(opts) {
 
 });
 

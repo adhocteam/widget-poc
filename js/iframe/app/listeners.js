@@ -16,6 +16,9 @@ var WidgetApp = WidgetApp || {};
           handlePlanPayload(payload);
         } else if (payload.routeTo){
           WidgetApp.routes.handleRouteTo(payload.routeTo);
+        } else if (payload.noPlans){
+          console.log("Emit null overlay");
+          WidgetApp.emitNullOverlay()
         }
       }
     }, false);

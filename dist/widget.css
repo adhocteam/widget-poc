@@ -58,7 +58,7 @@
   opacity: 1;
   transition: opacity 0.2s; }
 
-.widgetOverlay {
+.widgetOverlay .overlayContainer {
   position: fixed;
   border: 1px solid red;
   right: 0px;
